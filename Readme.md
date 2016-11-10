@@ -8,7 +8,7 @@ Assignment details
 Do the following to complete this assignment:
 
 1. Clone the [starting project code](https://github.com/cs4241-16b/A4-Persistence). **DO NOT FORK THE REPO and DO NOT MAKE IT PUBLIC.** Since this is an extension of Assignment 3, you can just copy your code over into this repository. Please make sure to copy all the required files into this repository. 
-2. The goal of this project is to expand on Assignment 3. Now instead of just filtering through a list, you will have to read data in from a text file, parse it and display it in an appealing way. You will also have to develop functionality to add new information to the text file and delete unwanted information from the text file. All from a well laid out website. Since deleting and adding isn't something that you should be able to bookmark, you will not want to use GET for adding or deleting, but instead use POST.
+2. The goal of this project is to expand on Assignment 3. Now instead of just filtering through a list, you will have to read data in from a text file, parse it and display it in an appealing way. You will also have to develop functionality to add new information to the text file and delete unwanted information from the text file. All from a well laid out website. Since deleting and adding isn't something that you should be able to bookmark, you will not want to use GET for adding or deleting, but instead use POST (refer to the `<form action="">` attribute for this.
 3. Deploy your project to Heroku.
 	* Ensure that your project has the proper naming scheme (`cs4241-a4-yourGitHubUsername`) so we can find it.
 4. The project will be graded against the following rubric (120 total):
