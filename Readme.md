@@ -8,7 +8,15 @@ Assignment details
 Do the following to complete this assignment:
 
 1. Clone the [starting project code](https://github.com/cs4241-16b/A4-Persistence). **DO NOT FORK THE REPO and DO NOT MAKE IT PUBLIC.** Since this is an extension of Assignment 3, you can just copy your code over into this repository. Please make sure to copy all the required files into this repository. 
-2. The goal of this project is to expand on Assignment 3. Now instead of just filtering through a list, you will have to read data in from a text file, parse it and display it in an appealing way. You will also have to develop functionality to add new information to the text file and delete unwanted information from the text file. All from a well laid out website. Since deleting and adding isn't something that you should be able to bookmark, you will not want to use GET for adding or deleting, but instead use POST (refer to the `<form action="">` attribute for this.
+2. The goal of this project is to expand on Assignment 3: 
+	* Now instead of just filtering through a list, you will have to read data in from a text file, parse it and display it in an appealing way. 
+	* You will also have to develop functionality to add new information to the text file and delete unwanted information from the text file. All from a well laid out website. 
+	* Since deleting and adding isn't something that you should be able to bookmark, you will not want to use GET for adding or deleting, but instead use POST.
+		* Refer to the `<form action="">` attribute for this.
+	* On the server side, note that you will no longer be parsing the URI, as using POST instead puts the query in the HTTP Request body. 
+		* To parse a POST request, you will need to use asynchronous functions. **This is tricky.** The following links should help.
+			* [Parsing POST with node.js -- stack overflow](http://stackoverflow.com/a/8640308/2405902)
+			* [callbackhell . com](http://callbackhell.com/)
 3. Deploy your project to Heroku.
 	* Ensure that your project has the proper naming scheme (`cs4241-a4-yourGitHubUsername`) so we can find it.
 4. The project will be graded against the following rubric (120 total):
