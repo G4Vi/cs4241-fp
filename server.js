@@ -193,6 +193,7 @@ function createListItem(d)
     html = html + '</li>'
     return html*/
     html = '<li>'
+    html = html + d
     html = html + '<form action="delete" method="post">'
     html = html + '<button name="delete" value="'
     html = html + d
