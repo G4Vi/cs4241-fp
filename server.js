@@ -175,7 +175,7 @@ function sendFile(res, filename, contentType) {
 function arrayToHTMLList(movieNames)
 {  
     var html = '<ul>'
-    html = html + movieNames.map(createListItem(d) ).join(' ')    
+    html = html + movieNames.map(createListItem).join(' ')    
     html = html + '</ul>'
     
     return html
