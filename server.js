@@ -183,12 +183,20 @@ function arrayToHTMLList(movieNames)
 
 function createListItem(d)
 {
-    html = '<li>'
+    /*html = '<li>'
     html = html + '<form action="delete" method="post">'
     html = html + '<input type="text" name="delete" id="deletebox" value="'
     html = html + d
     html = html + '" readonly autocomplete="off"/>'
     html = html + '<button type="submit">Edit</button>'
+    html = html + '</form>' 
+    html = html + '</li>'
+    return html*/
+    html = '<li>'
+    html = html + '<form action="delete" method="post">'
+    html = html + '<button name="delete" value="'
+    html = html + d
+    html = html + '">Delete</button>
     html = html + '</form>' 
     html = html + '</li>'
     return html
