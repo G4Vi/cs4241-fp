@@ -1,0 +1,43 @@
+body{
+background-color: #999999; 
+ margin: 0 auto;
+ font-family: "HelveticaNeue-Light", "Helvetica Neue Light", "Helvetica Neue", Helvetica, Arial, "Lucida Grande", sans-serif; 
+}
+
+h1, h2, h3{
+    color: #FF3333;
+    padding-left:20px;
+}
+
+.left
+{
+float: left;
+width: 100px;
+height:800px;
+background-image: url('popcorn.png');
+background-repeat: repeat-y;
+}
+.right
+{
+float: right;
+width: 100px;
+height:800px;
+background-image: url('popcorn.png');
+background-repeat: repeat-y;
+}
+
+
+.content h1, h2, input{
+    width: 50%;
+    margin: 0 50px;
+}
+
+.content #movielist ul li{
+    width: 50%;
+    margin-left: 50px;
+}
+
+.content{
+    padding-left:50px;
+}
+
