@@ -111,7 +111,7 @@ function printHTMLStart()
 
   html = html + '<head>'
   
-  html = html + ' <title>CS4241 Assignment 3 - Gavin Hayes</title> <meta charset="utf-8"> <link rel="stylesheet" type="text/css" href="style.css"/>'
+  html = html + ' <title>CS4241 Assignment 4 - Gavin Hayes</title> <meta charset="utf-8"> <link rel="stylesheet" type="text/css" href="style.css"/>'
   html = html + '<link href="https://fonts.googleapis.com/css?family=Lato" rel="stylesheet">'
   
   html = html + '</head>'
@@ -175,7 +175,21 @@ function sendFile(res, filename, contentType) {
 function arrayToHTMLList(movieNames)
 {  
     var html = '<ul>'
-    html = html + movieNames.map(function(d) { return '<li>'+d+'</li>' }).join(' ')
+    html = html + movieNames.map(createListItem(d) ).join(' ')    
     html = html + '</ul>'
+    
+    return html
+}
+
+function createListItem(d)
+{
+    html = '<li>'
+    html = html + '<form action="delete" method="post">'
+    html = html + '<input type="text" name="delete" id="deletebox" value="'
+    html = html + d
+    html = html + '" readonly autocomplete="off"/>'
+    html = html + '<button type="submit">Edit</button>'
+    html = html + '</form>' 
+    html = html + '</li>'
     return html
 }
