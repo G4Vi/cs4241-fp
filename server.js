@@ -279,7 +279,7 @@ function removeMovie(movieName)
   var stringToSearch = escapeRegExp(movieName + '\n')
   console.log(stringToSearch)
   var term = new RegExp( stringToSearch, 'g' )
-  var result = data.replace(term, 't');
+  var result = data.replace(term, '');
 
   console.log('result is ' + result)
   fs.writeFile(fileName, result, 'utf8', function (err) {
