@@ -120,9 +120,7 @@ function printHTMLStart()
   html = html + '</head>'
 
   html = html + '<body>'
-  html = html + '<div class="sidebar" id="left"></div>'
-  html = html + '<div class="sidebar" id="right"></div>'
-  
+  html = html + '<div class="backimg" id="popback">'    
   html = html + '<div class = "content">'
   html = html + '<h1>Movie Search</h1>'
 
@@ -137,7 +135,7 @@ function printHTMLStart()
 
 function printHTMLEnd()
 {
-  var html = '</div></div>'    
+  var html = '</div></div></div>'    
     
   html = html + '<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>'
   html = html + '<script src="js/scripts.js"></script>'

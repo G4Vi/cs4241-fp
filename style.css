@@ -15,13 +15,14 @@ h1, h2, h3{
     padding-left:20px;
 }
 
-.sidebar{
+.backimg{
 width: 100%;
 height: 100%;
 background-image: url('popcorn.png');
 background-repeat: repeat;
 overflow:hidden;
 z-index:-1;
+position: fixed;    
 }
 
 /*#left{
@@ -33,16 +34,6 @@ z-index:-1;
     position: fixed;
     background-repeat: repeat-y;   
 }
-
-#right{
-    float: right;
-    width: 100px;
-    height: 100%;
-    background-image: url('popcorn2.png');
-    position: fixed;
-    /*background-attachment:fixed;*/
-    background-repeat: repeat-y;
-}*/
 
 
 .content h1, h2, input{
