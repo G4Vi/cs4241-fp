@@ -276,28 +276,18 @@ function removeMovie(movieName)
   if (err) {
     return console.log(err);
   }
-  var stringToSearch = escapeRegExp(movieName + '\n')
-  console.log(stringToSearch)
+  
+  var stringToSearch = escapeRegExp(movieName + '\n')  
   var term = new RegExp( stringToSearch, 'g' )
   var result = data.replace(term, '');
-
-  console.log('result is ' + result)
+ 
   fs.writeFile(fileName, result, 'utf8', function (err) {
      if (err) return console.log(err);
   });
   
   fs.readFile(fileName, (err, data) => {
-  if (err) throw err;
-  console.log(data);
-  movies = data.toString().split("\n");
-  for(i in movies){                
-               console.log(movies[i])
-            }
-});
-  
-  /*movies = fs.readFile(fileName).toString().split("\n");
-  for(i in movies){                
-               console.log(movies[i])
-            }*/
+  if (err) throw err;  
+  movies = data.toString().split("\n");  
+  }); 
 });
 }
