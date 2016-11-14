@@ -78,7 +78,7 @@ function handleDelete(req, res, uri){
                 }
             }*/
             
-            res.end(html)
+            //res.end(html)
         });
     }
     else{
