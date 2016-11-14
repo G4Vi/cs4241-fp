@@ -17,11 +17,11 @@ background-image: url('popcorn.png');
 background-repeat: repeat-y;
 }
 
-.sidebar #left{
+#left{
     float: left;
 }
 
-.sidebar #right{
+#right{
     float: right;
 }
 
