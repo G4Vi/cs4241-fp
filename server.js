@@ -51,6 +51,7 @@ console.log('listening on 8080')
 
 function handleDelete(req, res, uri){    
     
+    function(){
     //make sure its post
     if (req.method == 'POST') {
         var body = '';
@@ -76,6 +77,7 @@ function handleDelete(req, res, uri){
     }
     else{
         console.log("not post")        
+    }
     }
     
     //error or no error reload the page
