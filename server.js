@@ -67,7 +67,7 @@ function handleDelete(req, res, uri){
         req.on('end', function () {
             var post = qs.parse(body);       
             
-            
+            console.log('removing')
             var html = ''
             var movie = post['movie']
             removeMovie(movie)
@@ -85,7 +85,7 @@ function handleDelete(req, res, uri){
         console.log("not post")        
     }
     
-    sendIndex(res)
+    //sendIndex(res)
     
     
 
