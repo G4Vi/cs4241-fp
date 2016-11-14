@@ -8,7 +8,8 @@ var http = require('http')
 //load movies array from another js file
 //var movies = require('./movies')
 
-var movies = fs.readFileSync('top250.txt').toString().split("\n");
+var movieTXT = 'top250.txt'
+var movies = fs.readFileSync(movieTXT).toString().split("\n");
 
 var server = http.createServer (function (req, res) {
 var uri = url.parse(req.url, true)
@@ -48,18 +49,16 @@ server.listen(process.env.PORT || port)
 console.log('listening on 8080')
 
 
-function handleDelete(req, res, uri){   
+function handleDelete(req, res, uri){    
     
-   // var contentType = 'text/html'
-   // res.writeHead(200, {'Content-type': contentType})    
-    
+    //make sure its post
     if (req.method == 'POST') {
         var body = '';
 
         req.on('data', function (data) {
             body += data;
             
-            //1MB max request            
+            //1MB max request size            
             if (body.length > 1e6)
                 req.connection.destroy();
         });
@@ -67,25 +66,20 @@ function handleDelete(req, res, uri){
         req.on('end', function () {
             var post = qs.parse(body);       
             
-            console.log('removing')
-            var html = ''
+            //check movies to see if its a valid post request and act
+            console.log('removing')           
             var movie = post['movie']
-            removeMovie(movie)
-            /*for(i in movies){                
-                if(movies[i] === movie)
-                {
-                    html = 'movie found'
-                }
-            }*/
+            removeMovie(movie)           
             
-            //res.end(html)
+            
         });
     }
     else{
         console.log("not post")        
     }
     
-    //sendIndex(res)
+    //error or no error reload the page
+    sendIndex(res)
     
     
 
@@ -216,11 +210,7 @@ fs.readFile(filename, function(error, content) {
 }
 
 function arrayToHTMLList(movieNames)
-{  
-/* var html = '<ul>'
-    html = html + movieNames.map(createListItem).join(' ')    
-    html = html + '</ul>'*/
-
+{
     var html = '<table>'
     html = html + '<thead><tr><th>Movie</th><th>Delete</th></tr</thead>'
     html = html + '<tbody>'
@@ -232,25 +222,8 @@ function arrayToHTMLList(movieNames)
 
 function createListItem(d)
 {
-    /*html = '<li>'
-    html = html + '<form action="delete" method="post">'
-    html = html + '<input type="text" name="delete" id="deletebox" value="'
-    html = html + d
-    html = html + '" readonly autocomplete="off"/>'
-    html = html + '<button type="submit">Edit</button>'
-    html = html + '</form>' 
-    html = html + '</li>'
-    */
-    html = ''
-    
-    /*html = html + '<form action="delete" method="post">'
-    html = html + '<li>'
-    html = html + d    
-    html = html + '<button name="delete" value="'
-    html = html + d
-    html = html + '">Delete</button>'    
-    html = html + '</li>'
-    html = html + '</form>' */    
+
+    html = ''      
     
     html = html + '<tr><td>'
     html = html + '<form action="delete" method="post">'
@@ -271,23 +244,31 @@ return str.replace(/[\-\[\]\/\{\}\(\)\*\+\?\.\\\^\$\|]/g, "\\$&");
 
 function removeMovie(movieName)
 {
-  var fileName = 'top250.txt'
-  fs.readFile(fileName, 'utf8', function (err,data) {
-  if (err) {
-    return console.log(err);
-  }
+  //read the movies into data
+  fs.readFile(movieTXT, 'utf8', function (err,data) {
+  if (err) return console.log(err);
   
+  //determine if string exists in file
   var stringToSearch = escapeRegExp(movieName + '\n')  
   var term = new RegExp( stringToSearch, 'g' )
-  var result = data.replace(term, '');
- 
-  fs.writeFile(fileName, result, 'utf8', function (err) {
-     if (err) return console.log(err);
-  });
+  var exists = data.search(term) >= 0
   
-  fs.readFile(fileName, (err, data) => {
-  if (err) throw err;  
-  movies = data.toString().split("\n");  
-  }); 
+  //actually replacing it
+  if(exists){
+      var result = data.replace(term, '');
+      fs.writeFileSync(movieTXT, result, 'utf8')
+      
+      //reload movies array
+      fs.readFile(movieTXT, (err, data) => {
+          if (err) return console.log(err);
+          movies = data.toString().split("\n");
+      }); 
+  }
+ 
+ /* fs.writeFile(movieTXT, result, 'utf8', function (err) {
+     if (err) return console.log(err);
+  });*/
+ 
+  
 });
 }
