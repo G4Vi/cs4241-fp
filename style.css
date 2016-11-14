@@ -25,32 +25,22 @@ z-index:-1;
 position: fixed;    
 }
 
-/*#left{
-    float: left;
-    width: 100px;
-    height: 100%;
-    background-image: url('popcorn.png');
-    /*background-attachment:fixed;*/
-    position: fixed;
-    background-repeat: repeat-y;   
-}
-
 
 .content h1, h2, input{
-    width: 50%;
-    margin: 0 50px;    
+    /*width: 50%;
+    margin: 0 50px;*/ 
+    
 }
 
 .content #movielist table{
-    padding-left:50px;
+    /*padding-left:50px;*/
 }
 
 .content{
     padding-left:50px;
     z-index:9;
     background-color: #999999; 
-    margin-left: 50px;
-    margin-right: 50px;
+    margin: 0 100px;
 }
 
 .content form{
