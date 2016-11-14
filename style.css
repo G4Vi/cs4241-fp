@@ -41,6 +41,8 @@ background-repeat: repeat-y;
     padding-left:50px;
 }
 
-.content button{
-    display: inline;
+.content form{
+    margin: 0;
+    padding: 0;
+    /*display: inline;*/
 }
