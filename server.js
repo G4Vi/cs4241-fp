@@ -286,6 +286,9 @@ function removeMovie(movieName)
      if (err) return console.log(err);
   });
   
-  movies = fs.readFileSync('top250.txt').toString().split("\n");
+  movies = fs.readFile('top250.txt').toString().split("\n");
+  for(i in movies){                
+               console.log(movies[i])
+            }
 });
 }
