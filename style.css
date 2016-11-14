@@ -32,6 +32,7 @@ position: fixed;
     margin: 0 100px;
     top: 0;
     position: fixed;
+    width: 80%;
 }
 
 .content form{
