@@ -179,8 +179,10 @@ function arrayToHTMLList(movieNames)
     html = html + '</ul>'*/
    
     var html = '<table>'
+    html = html + '<thead><tr><th>Movie</th><th>Delete</th></tr</thead>'
+    html = html + '<tbody>'
     html = html + movieNames.map(createListItem).join(' ')    
-    html = html + '</table>'
+    html = html + '</tbody></table>'
     
     return html
 }
