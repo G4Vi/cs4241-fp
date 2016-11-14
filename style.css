@@ -37,7 +37,7 @@ background-repeat: repeat-y;
     margin-left: 50px;
 }
 
-.content #movielist table tbody{
+.content #movielist table tbody tr td{
     width: 50%;
     margin-left: 50px;
 }
