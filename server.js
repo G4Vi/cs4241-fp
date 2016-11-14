@@ -180,7 +180,7 @@ function arrayToHTMLList(movieNames)
    
     var html = '<table>'
     html = html + movieNames.map(createListItem).join(' ')    
-    html = html + '</table>'*/
+    html = html + '</table>'
     
     return html
 }
