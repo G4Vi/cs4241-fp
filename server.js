@@ -277,7 +277,7 @@ function removeMovie(movieName)
     return console.log(err);
   }
   var stringToSearch = escapeRegExp(movieName + '\n')
-  console.log(strintToSearch)
+  console.log(stringToSearch)
   var term = new RegExp( stringToSearch, 'g' )
   var result = data.replace(term, 't');
 
