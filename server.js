@@ -13,6 +13,7 @@ var server = http.createServer (function (req, res) {
 
   switch( uri.pathname ) {
     case '/delete':
+      console.log("uri.pathname")   
       handleDelete(res, uri)
       break
     case '/search':
@@ -69,6 +70,10 @@ function handleDelete(req, res, uri){
             res.end(html)
         });
     }
+    else{
+        console.log("not post")
+        res.end('404 not found')
+    }
  
 }
 
@@ -81,8 +86,7 @@ function handleSearch(res, uri) {
   //if printing the whole page (not ajax) print the items above the movie list
   if(uri.query && (!uri.query.inline))
   {
-      html = printHTMLStart()
-      console.log("notinline")    
+      html = printHTMLStart()       
   }
   
   //if there is a search query
