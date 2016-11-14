@@ -27,14 +27,9 @@ background-repeat: repeat-y;
 }
 
 
-.content h1, h2, input{
+.content h1, h2, input, table{
     width: 50%;
     margin: 0 50px;    
-}
-
-.content #movielist ul li{
-    width: 50%;
-    margin-left: 50px;
 }
 
 .content #movielist table{
