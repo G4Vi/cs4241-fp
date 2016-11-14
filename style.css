@@ -18,11 +18,10 @@ h1, h2, h3{
 .sidebar
 {
 width: 100px;
-/*height: 100vh;*/
-top: 0;
-bottom: 0;
+height: 100%;
 background-image: url('popcorn.png');
 background-repeat: repeat-y;
+overflow:hidden;
 z-index:-1;
 }
 
