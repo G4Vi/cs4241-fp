@@ -289,6 +289,10 @@ function removeMovie(movieName)
   fs.readFile(fileName, (err, data) => {
   if (err) throw err;
   console.log(data);
+  movies = data.toString().split("\n");
+  for(i in movies){                
+               console.log(movies[i])
+            }
 });
   
   /*movies = fs.readFile(fileName).toString().split("\n");
