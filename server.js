@@ -6,7 +6,13 @@ var http = require('http')
 
 
 //load movies array from another js file
-var movies = require('./movies')
+//var movies = require('./movies')
+var fs = require('fs');
+var movies = fs.readFileSync('top250.txt').toString().split("\n");
+
+/*for(i in movies) {
+    console.log(movies[i]);
+}*/
 
 var server = http.createServer (function (req, res) {
 var uri = url.parse(req.url, true)
@@ -67,7 +73,8 @@ function handleDelete(req, res, uri){
             
             
             var html = ''
-            html = escapeRegExp(post['movie'])
+            html = post['movie']
+            
             res.end(html)
         });
     }
