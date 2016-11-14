@@ -286,9 +286,14 @@ function removeMovie(movieName)
      if (err) return console.log(err);
   });
   
-  movies = fs.readFile('top250.txt').toString().split("\n");
+  fs.readFile(fileName, , (err, data) => {
+  if (err) throw err;
+  console.log(data);
+});
+  
+  /*movies = fs.readFile(fileName).toString().split("\n");
   for(i in movies){                
                console.log(movies[i])
-            }
+            }*/
 });
 }
