@@ -14,10 +14,10 @@ var server = http.createServer (function (req, res) {
   switch( uri.pathname ) {
     case '/delete':
       console.log("uri.pathname")   
-      handleDelete(res, uri)
+      handleDelete(req, res, uri)
       break
     case '/search':
-      handleSearch(req, res, uri)
+      handleSearch(res, uri)
       break    
     case '/':
       sendIndex(res)
