@@ -27,10 +27,9 @@ background-repeat: repeat-y;
 }
 
 
-.content h1, h2, input, button{
+.content h1, h2, input{
     width: 50%;
-    margin: 0 50px;
-    display: inline;
+    margin: 0 50px;    
 }
 
 .content #movielist ul li{
@@ -42,3 +41,6 @@ background-repeat: repeat-y;
     padding-left:50px;
 }
 
+.content button{
+    display: inline;
+}
