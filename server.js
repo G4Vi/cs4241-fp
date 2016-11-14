@@ -2,6 +2,7 @@ var http = require('http')
   , fs   = require('fs')
   , url  = require('url')
   , port = 8080
+  , qs   = require('querystring');
 
 
 //load movies array from another js file
@@ -10,9 +11,12 @@ var movies = require('./movies')
 var server = http.createServer (function (req, res) {
   var uri = url.parse(req.url, true)
 
-  switch( uri.pathname ) {    
+  switch( uri.pathname ) {
+    case '/delete':
+      handleDelete(res, uri)
+      break
     case '/search':
-      handleSearch(res, uri)
+      handleSearch(req, res, uri)
       break    
     case '/':
       sendIndex(res)
@@ -31,10 +35,7 @@ var server = http.createServer (function (req, res) {
       break
     case '/popcorn.png':
       sendFile(res, 'popcorn.png', 'image/png')
-      break
-    case '/popcorn2.png':
-      sendFile(res, 'popcorn2.png', 'image/png')
-      break
+      break   
     default:
       res.end('404 not found')
   }
@@ -43,6 +44,33 @@ var server = http.createServer (function (req, res) {
 
 server.listen(process.env.PORT || port)
 console.log('listening on 8080')
+
+
+function handleDelete(req, res, uri){
+       //http://stackoverflow.com/a/8640308/2405902
+       if (req.method == 'POST') {
+        var body = '';
+
+        req.on('data', function (data) {
+            body += data;
+            
+            //1MB max request            
+            if (body.length > 1e6)
+                req.connection.destroy();
+        });
+
+        req.on('end', function () {
+            var post = qs.parse(body);
+            
+            var contentType = 'text/html'
+            res.writeHead(200, {'Content-type': contentType})
+            var html = ''
+            html = post['movie']
+            res.end(html)
+        });
+    }
+ 
+}
 
 
 function handleSearch(res, uri) {
@@ -214,7 +242,7 @@ function createListItem(d)
     html = html + '<tr><td>'
     html = html + '<form action="delete" method="post">'
     html = html + d    
-    html = html + '</td><td><button name="delete" value="'
+    html = html + '</td><td><button name="movie" value="'
     html = html + d
     html = html + '">Delete</button>'    
     html = html + '</td></tr>'
