@@ -11,8 +11,7 @@ background-color: #999999;
 }
 
 h1, h2, h3{
-    color: #FF3333;
-    padding-left:20px;
+    color: #FF3333;    
 }
 
 .backimg{
@@ -26,21 +25,12 @@ position: fixed;
 }
 
 
-.content h1, h2, input{
-    /*width: 50%;
-    margin: 0 50px;*/ 
-    
-}
-
-.content #movielist table{
-    /*padding-left:50px;*/
-}
-
 .content{
     padding-left:50px;
     z-index:9;
     background-color: #999999; 
     margin: 0 100px;
+    top: 0;
 }
 
 .content form{
