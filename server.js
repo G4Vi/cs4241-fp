@@ -117,8 +117,8 @@ function printHTMLStart()
   html = html + '</head>'
 
   html = html + '<body>'
-  html = html + '<div class="left"></div>'
-  html = html + '<div class="right"></div>'
+  html = html + '<div class="sidebar" id="left"></div>'
+  html = html + '<div class="sidebar" id="right"></div>'
   
   html = html + '<div class = "content">'
   html = html + '<h1>Movie Search</h1>'

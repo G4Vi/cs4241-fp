@@ -9,31 +9,30 @@ h1, h2, h3{
     padding-left:20px;
 }
 
-.left
+.sidebar
 {
-float: left;
-width: 100px;
-height:800px;
-background-image: url('popcorn.png');
-background-repeat: repeat-y;
-}
-.right
-{
-float: right;
 width: 100px;
 height:800px;
 background-image: url('popcorn.png');
 background-repeat: repeat-y;
 }
 
+.sidebar #left{
+    float: left;
+}
 
-.content h1, h2, input, table{
+.sidebar #right{
+    float: right;
+}
+
+
+.content h1, h2, input{
     width: 50%;
     margin: 0 50px;    
 }
 
 .content #movielist table{
-    /*padding-left:50px;*/
+    padding-left:50px;
 }
 
 .content{
