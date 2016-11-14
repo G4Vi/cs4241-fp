@@ -29,7 +29,7 @@ z-index:-1;
     width: 100px;
     height: 100%;
     background-image: url('popcorn.png');
-    background-attachment:scroll;    
+    background-attachment:local;    
     background-repeat: repeat-y;   
 }
 
@@ -38,7 +38,7 @@ z-index:-1;
     width: 100px;
     height: 100%;
     background-image: url('popcorn.png');
-    background-attachment:scroll;   
+    background-attachment:local;   
     background-repeat: repeat-y;
 }
 
