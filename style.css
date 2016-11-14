@@ -41,7 +41,7 @@ z-index:-1;
     width: 100px;
     height: 100%;
     background-image: url('popcorn.png');
-    position: fixed;
+    /*position: fixed;*/
     background-repeat: repeat-y;
     overflow:hidden;
     z-index:-1;
