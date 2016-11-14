@@ -7,7 +7,6 @@ var http = require('http')
 
 //load movies array from another js file
 //var movies = require('./movies')
-var fs = require('fs');
 var movies = fs.readFileSync('top250.txt').toString().split("\n");
 
 /*for(i in movies) {
@@ -54,8 +53,8 @@ console.log('listening on 8080')
 
 function handleDelete(req, res, uri){   
     
-    var contentType = 'text/html'
-    res.writeHead(200, {'Content-type': contentType})    
+   // var contentType = 'text/html'
+   // res.writeHead(200, {'Content-type': contentType})    
     
     if (req.method == 'POST') {
         var body = '';
@@ -74,13 +73,13 @@ function handleDelete(req, res, uri){
             
             var html = ''
             var movie = post['movie']
-            for(i in movies){
-                console.log(movies[i]);
+            removeMovie(movie)
+            /*for(i in movies){                
                 if(movies[i] === movie)
                 {
                     html = 'movie found'
                 }
-            }
+            }*/
             
             res.end(html)
         });
@@ -89,7 +88,7 @@ function handleDelete(req, res, uri){
         console.log("not post")        
     }
     
-    //sendIndex(res)
+    sendIndex(res)
     
     
 
@@ -271,4 +270,24 @@ function createListItem(d)
 //avoid regex crashing the app if a backslash is submitted
 function escapeRegExp(str) {
 return str.replace(/[\-\[\]\/\{\}\(\)\*\+\?\.\\\^\$\|]/g, "\\$&");
+}
+
+function removeMovie(movieName)
+{
+  var fileName = 'top250.txt'
+  fs.readFile(fileName, 'utf8', function (err,data) {
+  if (err) {
+    return console.log(err);
+  }
+  var stringToSearch = escapeRegExp(movieName + '\n')
+  var term = new RegExp( stringToSearch, 'g' )
+  var result = data.replace(term, 't');
+
+  console.log('result is ' + result)
+  fs.writeFile(fileName, result, 'utf8', function (err) {
+     if (err) return console.log(err);
+  });
+  
+  movies = fs.readFileSync('top250.txt').toString().split("\n");
+});
 }
