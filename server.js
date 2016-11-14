@@ -73,7 +73,14 @@ function handleDelete(req, res, uri){
             
             
             var html = ''
-            html = post['movie']
+            var movie = post['movie']
+            for(i in movies){
+                console.log(movies[i]);
+                if(movies[i] === movie)
+                {
+                    html = 'movie found'
+                }
+            }
             
             res.end(html)
         });
