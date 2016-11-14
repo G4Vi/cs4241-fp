@@ -49,6 +49,11 @@ console.log('listening on 8080')
 
 function handleDelete(req, res, uri){
        //http://stackoverflow.com/a/8640308/2405902
+       var contentType = 'text/html'
+       res.writeHead(200, {'Content-type': contentType})
+       
+       console.log(req.method)
+       
        if (req.method == 'POST') {
         var body = '';
 
@@ -61,10 +66,9 @@ function handleDelete(req, res, uri){
         });
 
         req.on('end', function () {
-            var post = qs.parse(body);
+            var post = qs.parse(body);       
             
-            var contentType = 'text/html'
-            res.writeHead(200, {'Content-type': contentType})
+            
             var html = ''
             html = post['movie']
             res.end(html)
