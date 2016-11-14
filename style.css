@@ -27,9 +27,10 @@ background-repeat: repeat-y;
 }
 
 
-.content h1, h2, input{
+.content h1, h2, input, button{
     width: 50%;
     margin: 0 50px;
+    display: inline;
 }
 
 .content #movielist ul li{
