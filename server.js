@@ -7,11 +7,8 @@ var http = require('http')
 
 //load movies array from another js file
 //var movies = require('./movies')
-var movies = fs.readFileSync('top250.txt').toString().split("\n");
 
-/*for(i in movies) {
-    console.log(movies[i]);
-}*/
+var movies = fs.readFileSync('top250.txt').toString().split("\n");
 
 var server = http.createServer (function (req, res) {
 var uri = url.parse(req.url, true)
@@ -280,6 +277,7 @@ function removeMovie(movieName)
     return console.log(err);
   }
   var stringToSearch = escapeRegExp(movieName + '\n')
+  console.log(strintToSearch)
   var term = new RegExp( stringToSearch, 'g' )
   var result = data.replace(term, 't');
 
