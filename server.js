@@ -174,9 +174,13 @@ function sendFile(res, filename, contentType) {
 
 function arrayToHTMLList(movieNames)
 {  
-    var html = '<ul>'
+   /* var html = '<ul>'
     html = html + movieNames.map(createListItem).join(' ')    
-    html = html + '</ul>'
+    html = html + '</ul>'*/
+   
+    var html = '<table>'
+    html = html + movieNames.map(createListItem).join(' ')    
+    html = html + '</table>'*/
     
     return html
 }
@@ -191,15 +195,26 @@ function createListItem(d)
     html = html + '<button type="submit">Edit</button>'
     html = html + '</form>' 
     html = html + '</li>'
-    return html*/
+    */
     html = ''
-    html = html + '<form action="delete" method="post">'
+    
+    /*html = html + '<form action="delete" method="post">'
     html = html + '<li>'
     html = html + d    
     html = html + '<button name="delete" value="'
     html = html + d
     html = html + '">Delete</button>'    
     html = html + '</li>'
+    html = html + '</form>' */    
+    
+    html = html + '<tr><td>'
+    html = html + '<form action="delete" method="post">'
+    html = html + d    
+    html = html + '</td><td><button name="delete" value="'
+    html = html + d
+    html = html + '">Delete</button>'    
+    html = html + '</td></tr>'
     html = html + '</form>' 
+    
     return html
 }
