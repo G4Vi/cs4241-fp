@@ -1,7 +1,13 @@
+html{
+    min-height:100%;
+    position:relative;
+}
+
 body{
 background-color: #999999; 
  margin: 0 auto;
  font-family: "HelveticaNeue-Light", "Helvetica Neue Light", "Helvetica Neue", Helvetica, Arial, "Lucida Grande", sans-serif; 
+ height: 100%;
 }
 
 h1, h2, h3{
@@ -12,9 +18,12 @@ h1, h2, h3{
 .sidebar
 {
 width: 100px;
-height: 100vh;
+/*height: 100vh;*/
+top: 0;
+bottom: 0;
 background-image: url('popcorn.png');
 background-repeat: repeat-y;
+z-index:-1;
 }
 
 #left{
