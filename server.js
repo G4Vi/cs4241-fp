@@ -190,6 +190,7 @@ var contentType = 'text/html'
 var html = printHTMLStart()
 
 html = html + '<h2>All Movies</h2>'
+console.log('sending movies')
 html = html + arrayToHTMLList(movies) 
 
 html = html + printHTMLEnd()
@@ -262,6 +263,7 @@ function removeMovie(movieName)
       fs.readFile(movieTXT, (err, data) => {
           if (err) return console.log(err);
           movies = data.toString().split("\n");
+          console.log('array updated!')
       }); 
   }
  
