@@ -29,10 +29,8 @@ z-index:-1;
     width: 100px;
     height: 100%;
     background-image: url('popcorn.png');
-    background-attachment:fixed;    
-    background-repeat: repeat-y;
-   /* overflow:hidden;
-    z-index:-1;*/
+    background-attachment:scroll;    
+    background-repeat: repeat-y;   
 }
 
 #right{
@@ -40,10 +38,8 @@ z-index:-1;
     width: 100px;
     height: 100%;
     background-image: url('popcorn.png');
-    background-attachment:fixed;   
+    background-attachment:scroll;   
     background-repeat: repeat-y;
-   /* overflow:hidden;
-    z-index:-1;*/
 }
 
 
