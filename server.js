@@ -286,7 +286,7 @@ function removeMovie(movieName)
      if (err) return console.log(err);
   });
   
-  fs.readFile(fileName, , (err, data) => {
+  fs.readFile(fileName, (err, data) => {
   if (err) throw err;
   console.log(data);
 });
