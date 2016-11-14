@@ -12,8 +12,7 @@ var server = http.createServer (function (req, res) {
 var uri = url.parse(req.url, true)
 
 switch( uri.pathname ) {
-    case '/delete':
-    console.log("uri.pathname")   
+    case '/delete':     
     handleDelete(req, res, uri)
     break
     case '/search':
@@ -47,12 +46,10 @@ server.listen(process.env.PORT || port)
 console.log('listening on 8080')
 
 
-function handleDelete(req, res, uri){
-    //http://stackoverflow.com/a/8640308/2405902
-    var contentType = 'text/html'
-    res.writeHead(200, {'Content-type': contentType})
+function handleDelete(req, res, uri){   
     
-    console.log(req.method)
+    var contentType = 'text/html'
+    res.writeHead(200, {'Content-type': contentType})    
     
     if (req.method == 'POST') {
         var body = '';
@@ -78,7 +75,7 @@ function handleDelete(req, res, uri){
         console.log("not post")        
     }
     
-    sendIndex(res)
+    //sendIndex(res)
     
     
 
