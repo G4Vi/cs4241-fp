@@ -27,7 +27,7 @@ position: fixed;
 
 .content{
     padding-left:50px;
-    z-index:9;
+    /*z-index:9;*/
     background-color: #999999; 
     margin: 0 100px;
     top: 0;
