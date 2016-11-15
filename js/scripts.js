@@ -25,7 +25,7 @@ $('#insertbox').on('click focusin', function() {
     if(this.value == 'Enter a movie to insert')
     {
         this.value = ''
-        this.css("font-style", "normal")
+        $(this).css('font-style', 'normal')
         //this.css({"color", "#000000"});
     }
 });
