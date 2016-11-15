@@ -49,9 +49,8 @@ server.listen(process.env.PORT || port)
 console.log('listening on 8080')
 
 
-function handleDelete(req, res, uri){    
-    
-    function update(){
+function handleDelete(req, res, uri){   
+   
     //make sure its post
     if (req.method == 'POST') {
         var body = '';
@@ -71,22 +70,14 @@ function handleDelete(req, res, uri){
             console.log('removing')           
             var movie = post['movie']
             removeMovie(movie)           
-            
+            sendIndex(res)
             
         });
     }
     else{
-        console.log("not post")        
-    }
-    }
-    
-    function sendStuff(){
-    
-    //error or no error reload the page
-    sendIndex(res)
-    }
-    
-    
+        console.log("not post")
+        sendIndex(res)        
+    }    
 
 }
 
