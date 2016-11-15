@@ -272,6 +272,7 @@ function removeMovie(movieName, res)
           //sendIndex(res)
       });
       console.log('readfile inner done?')
+      return;
   }
  
  /* fs.writeFile(movieTXT, result, 'utf8', function (err) {
@@ -281,4 +282,5 @@ function removeMovie(movieName, res)
   
 });
   console.log('readfile outer done?')
+  return;
 }
