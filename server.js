@@ -270,7 +270,10 @@ function removeMovie(movieName, res)
 {
   //read the movies into data
   fs.readFile(movieTXT, 'utf8', function (err,data) {
-  if (err) return console.log(err);
+  if (err){
+      sendIndex(res)
+      return console.log(err);
+  }
   
   //determine if string exists in file
   var stringToSearch = escapeRegExp(movieName + '\n')  
@@ -284,13 +287,20 @@ function removeMovie(movieName, res)
       
       //reload movies array
       fs.readFile(movieTXT, (err, data) => {
-          if (err) return console.log(err);
+          if (err){
+              sendIndex(res)
+              return console.log(err);
+          }
           movies = data.toString().split("\n");
           console.log('array updated!')
           sendIndex(res)
           
       });      
-  } 
+  }
+  else
+  {
+      sendIndex(res)
+  }
   
 }); 
   
