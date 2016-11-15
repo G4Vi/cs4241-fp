@@ -70,7 +70,7 @@ function handleDelete(req, res, uri){
             //check movies to see if its a valid post request and act
             console.log('removing')           
             var movie = post['movie']
-            removeMovie(movie)
+            removeMovie(movie, res)
             done = true;            
             
         });
@@ -244,7 +244,7 @@ function escapeRegExp(str) {
 return str.replace(/[\-\[\]\/\{\}\(\)\*\+\?\.\\\^\$\|]/g, "\\$&");
 }
 
-function removeMovie(movieName)
+function removeMovie(movieName, res)
 {
   //read the movies into data
   fs.readFile(movieTXT, 'utf8', function (err,data) {
