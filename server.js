@@ -278,7 +278,7 @@ function removeMovie(movieName, res)
  /* fs.writeFile(movieTXT, result, 'utf8', function (err) {
      if (err) return console.log(err);
   });*/
- 
+ return;
   
 });
   console.log('readfile outer done?')
