@@ -80,7 +80,7 @@ function handleDelete(req, res, uri){
         done = true;              
     }
     
-    /*if(done){
+    if(done){
         sendIndex(res)
     }*/
 
@@ -268,8 +268,9 @@ function removeMovie(movieName, res)
           if (err) return console.log(err);
           movies = data.toString().split("\n");
           console.log('array updated!')
-          sendIndex(res)
-      }); 
+          //sendIndex(res)
+      });
+      console.log('readfile inner done?')
   }
  
  /* fs.writeFile(movieTXT, result, 'utf8', function (err) {
@@ -278,4 +279,5 @@ function removeMovie(movieName, res)
  
   
 });
+  console.log('readfile outer done?')
 }
