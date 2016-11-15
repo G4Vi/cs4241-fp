@@ -69,11 +69,11 @@ function handleDelete(req, res, uri){
             //check movies to see if its a valid post request and act
             console.log('removing')           
             var movie = post['movie']
-            //removeMovieBlocking(movie)
-            removeMovie(movie, res)
+            removeMovieBlocking(movie)
+            //removeMovie(movie, res)
                       
             //send it after removing if blocking.           
-            //sendIndex(res)
+            sendIndex(res)
             
             
         });
@@ -213,7 +213,7 @@ fs.readFile(filename, function(error, content) {
 function arrayToHTMLList(movieNames)
 {
     var html = '<table>'
-    html = html + '<thead><tr><th>Movie</th><th>Delete</th></tr</thead>'
+    html = html + '<thead><tr><th>Movie</th><th></th></tr</thead>'
     html = html + '<tbody>'
     html = html + movieNames.map(createListItem).join(' ')    
     html = html + '</tbody></table>'
