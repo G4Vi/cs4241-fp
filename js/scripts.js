@@ -22,7 +22,8 @@ $(document).ready(function($) {
 });
 
 $('#insertbox').on('click focusin', function() {
-    this.value = '';
+    if(this.value == 'Enter a movie')
+        this.value = '';
 });
 
 /*
