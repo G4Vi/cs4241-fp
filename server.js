@@ -258,10 +258,10 @@ function removeMovie(movieName, res)
   //actually replacing it
   if(exists){
       var result = data.replace(term, '');
-      //fs.writeFileSync(movieTXT, result, 'utf8')
-      fs.writeFile(movieTXT, result, 'utf8', function (err) {
+      fs.writeFileSync(movieTXT, result, 'utf8')
+     /* fs.writeFile(movieTXT, result, 'utf8', function (err) {
      if (err) return console.log(err);
-  });
+  });*/
       
       //reload movies array
       fs.readFile(movieTXT, (err, data) => {
