@@ -362,7 +362,16 @@ function insertMovie(movieName, res)
         }
         else
         {
-            sendIndex(res)
+               fs.readFile(movieTXT, (err, data) => {
+          if (err){
+              sendIndex(res)
+              return console.log(err);
+          }
+          movies = data.toString().split("\n");
+          console.log('array updated!')
+          sendIndex(res)
+          
+      });
         }
      
 });
