@@ -49,9 +49,8 @@ server.listen(process.env.PORT || port)
 console.log('listening on 8080')
 
 
-function handleDelete(req, res, uri){   
-   var done = false;
-   
+function handleDelete(req, res, uri){
+    
     //make sure its post
     if (req.method == 'POST') {
         var body = '';
@@ -70,22 +69,17 @@ function handleDelete(req, res, uri){
             //check movies to see if its a valid post request and act
             console.log('removing')           
             var movie = post['movie']
-            done = removeMovie(movie, res)
-            nextRequest();
-            //sendIndex(res)
+            removeMovieBlocking(movie)
             
-                       
+            //send it after removing.           
+            sendIndex(res)                       
             
         });
     }
     else{
         console.log("not post")
-        done = true;              
-    }
-    
-    if(done){
-        sendIndex(res)
-    }
+        sendIndex(res)              
+    }   
 
 }
 
@@ -247,7 +241,7 @@ function escapeRegExp(str) {
 return str.replace(/[\-\[\]\/\{\}\(\)\*\+\?\.\\\^\$\|]/g, "\\$&");
 }
 
-function removeMovie(movieName, res)
+function removeMovieBlocking(movieName)
 {
   //read the movies into data
   var data = fs.readFileSync(movieTXT, 'utf8').toString()  
@@ -265,8 +259,7 @@ function removeMovie(movieName, res)
       
       //reload movies array
       movies = fs.readFileSync(movieTXT, 'utf8').toString().split("\n");
-      console.log('array updated!')
-      
-      return true;
+      console.log('array updated!')    
+     
   } 
 }
