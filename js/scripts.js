@@ -24,8 +24,8 @@ $(document).ready(function($) {
 $('#insertbox').on('click focusin', function() {
     if(this.value == 'Enter a movie to insert')
     {
-        this.value = '';
-        //this.css({"font-style", "normal"});
+        this.value = ''
+        this.css({"font-style", "normal"})
         //this.css({"color", "#000000"});
     }
 });
@@ -33,8 +33,8 @@ $('#insertbox').on('click focusin', function() {
 $('#searchbox').on('click focusin', function() {
     if(this.value == 'Enter a movie to search')
     {
-        this.value = '';
-        //this.css({"font-style", "normal"});
+        this.value = ''
+        this.css({"font-style", "normal"})
         //this.css({"color", "#000000"});
     }
 });
