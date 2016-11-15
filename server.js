@@ -50,6 +50,7 @@ console.log('listening on 8080')
 
 
 function handleDelete(req, res, uri){   
+   var done = false;
    
     //make sure its post
     if (req.method == 'POST') {
@@ -69,15 +70,19 @@ function handleDelete(req, res, uri){
             //check movies to see if its a valid post request and act
             console.log('removing')           
             var movie = post['movie']
-            removeMovie(movie)           
-            sendIndex(res)
+            removeMovie(movie)
+            done = true;            
             
         });
     }
     else{
         console.log("not post")
-        sendIndex(res)        
-    }    
+        done = true;              
+    }
+    
+    if(done){
+        sendIndex(res)
+    }
 
 }
 
