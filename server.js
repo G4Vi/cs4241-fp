@@ -287,6 +287,7 @@ function removeMovie(movieName)
           if (err) return console.log(err);
           movies = data.toString().split("\n");
           console.log('array updated!')
+          return true;
           
       });
       console.log('readfile inner done?')      
@@ -295,5 +296,5 @@ function removeMovie(movieName)
 });
   console.log('readfile outer done?')
   
-  return true;
+  
 }
