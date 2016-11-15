@@ -82,7 +82,7 @@ function handleDelete(req, res, uri){
     
     if(done){
         sendIndex(res)
-    }*/
+    }
 
 }
 
