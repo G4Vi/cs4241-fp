@@ -15,6 +15,9 @@ var server = http.createServer (function (req, res) {
 var uri = url.parse(req.url, true)
 
 switch( uri.pathname ) {
+    case '/insert':
+    handleInsert(req, res, uri)
+    break
     case '/delete':     
     handleDelete(req, res, uri)
     break
@@ -47,6 +50,38 @@ switch( uri.pathname ) {
 
 server.listen(process.env.PORT || port)
 console.log('listening on 8080')
+
+function handleInsert(req, res, uri){
+    
+    //make sure its post
+    if (req.method == 'POST') {
+        var body = '';
+
+        req.on('data', function (data) {
+            body += data;
+            
+            //1MB max request size            
+            if (body.length > 1e6)
+                req.connection.destroy();
+        });
+
+        req.on('end', function () {
+            var post = qs.parse(body);       
+            
+            //check movies to see if its a valid post request and act
+            console.log('inserting')           
+            var movie = post['movie']
+            insertMovie(movie, res)          
+            
+        });
+    }
+    else{
+        console.log("not post")
+        sendIndex(res)              
+    }   
+
+}
+
 
 
 function handleDelete(req, res, uri){
@@ -314,4 +349,21 @@ function removeMovie(movieName, res)
   
 }); 
   
+}
+
+
+function insertMovie(movieName, res)
+{
+    fs.appendFile(movieTXT, movieName, encoding='utf8', function (err) {
+        if (err)
+        {
+            sendIndex(res)
+            return console.log(err);
+        }
+        else
+        {
+            sendIndex(res)
+        }
+     
+});
 }
