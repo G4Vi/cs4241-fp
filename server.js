@@ -5,9 +5,6 @@ var http = require('http')
 , qs   = require('querystring');
 
 
-//load movies array from another js file
-//var movies = require('./movies')
-
 var movieTXT = 'top250.txt'
 var movies = fs.readFileSync(movieTXT).toString().split("\n");
 
@@ -196,7 +193,7 @@ html = html + '<div class = "content">'
 html = html + '<h1>Movie Search</h1>'
 
 html = html + '<form action="search" method="get">'
-html = html + '<input type="text" name="search" id="searchbox" autocomplete="off"/>'
+html = html + '<input type="text" name="search" id="searchbox" value="Enter a movie to search" autocomplete="off"/>'
 html = html + '<button type="submit">Search</button>'
 html = html + '</form>'
 
@@ -254,7 +251,7 @@ function arrayToTable(movieNames)
     //Add movie form
     html = html + '<tr><form action="insert" method="post">'
     html = html + '<td>'
-    html = html + '<input type="text" name="movie" id="insertbox" value="Enter a movie" autocomplete="off"/></td><td>'
+    html = html + '<input type="text" name="movie" id="insertbox" value="Enter a movie to insert" autocomplete="off"/></td><td>'
     html = html + '<button type="submit">Insert</button>'
     html = html + '</td></form>' 
     html = html + '</tr>'
