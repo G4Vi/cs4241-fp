@@ -247,8 +247,7 @@ return str.replace(/[\-\[\]\/\{\}\(\)\*\+\?\.\\\^\$\|]/g, "\\$&");
 function removeMovie(movieName, res)
 {
   //read the movies into data
-  fs.readFile(movieTXT, 'utf8', function (err,data) {
-  if (err) return console.log(err);
+  var data = fs.readFileSync(movieTXT, 'utf8').toString()  
   
   //determine if string exists in file
   var stringToSearch = escapeRegExp(movieName + '\n')  
@@ -259,28 +258,10 @@ function removeMovie(movieName, res)
   if(exists){
       var result = data.replace(term, '');
       fs.writeFileSync(movieTXT, result, 'utf8')
-     /* fs.writeFile(movieTXT, result, 'utf8', function (err) {
-     if (err) return console.log(err);
-  });*/
+   
       
       //reload movies array
-      fs.readFile(movieTXT, (err, data) => {
-          if (err) return console.log(err);
-          movies = data.toString().split("\n");
-          console.log('array updated!')
-          return;
-          //sendIndex(res)
-      });
-      console.log('readfile inner done?')
-      return;
-  }
- 
- /* fs.writeFile(movieTXT, result, 'utf8', function (err) {
-     if (err) return console.log(err);
-  });*/
- return;
-  
-});
-  console.log('readfile outer done?')
-  return;
+      movies = fs.readFileSync(movieTXT, 'utf8').toString().split("\n");
+      console.log('array updated!')    
+  } 
 }
