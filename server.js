@@ -80,9 +80,9 @@ function handleDelete(req, res, uri){
         done = true;              
     }
     
-    if(done){
+    /*if(done){
         sendIndex(res)
-    }
+    }*/
 
 }
 
@@ -268,6 +268,7 @@ function removeMovie(movieName)
           if (err) return console.log(err);
           movies = data.toString().split("\n");
           console.log('array updated!')
+          sendIndex(res)
       }); 
   }
  
