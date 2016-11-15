@@ -70,10 +70,11 @@ function handleDelete(req, res, uri){
             console.log('removing')           
             var movie = post['movie']
             //removeMovieBlocking(movie)
-            removeMovie(movie)
-            
-            //send it after removing.           
-            sendIndex(res)                       
+            if(removeMovie(movie))
+            {            
+            //send it after removing if blocking.           
+            sendIndex(res)
+            }
             
         });
     }
@@ -293,5 +294,6 @@ function removeMovie(movieName)
   
 });
   console.log('readfile outer done?')
-
+  
+  return true;
 }
