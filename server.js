@@ -70,8 +70,8 @@ function handleDelete(req, res, uri){
             //check movies to see if its a valid post request and act
             console.log('removing')           
             var movie = post['movie']
-            removeMovie(movie, res)
-            done = true;            
+            done = removeMovie(movie, res)
+                       
             
         });
     }
@@ -262,6 +262,8 @@ function removeMovie(movieName, res)
       
       //reload movies array
       movies = fs.readFileSync(movieTXT, 'utf8').toString().split("\n");
-      console.log('array updated!')    
+      console.log('array updated!')
+      
+      return true;
   } 
 }
