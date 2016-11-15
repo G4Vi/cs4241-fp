@@ -121,7 +121,7 @@ if(uri.query && (uri.query.search !== "")) {
     }
     else //movies found
     {
-        html = html + '<h2>Movies with "' + uri.query.search + '" in the name</h2>' + arrayToHTMLList(filteredMovies)       
+        html = html + '<h2>Movies with "' + uri.query.search + '" in the name</h2>' + arrayToTable(filteredMovies)       
     }
     
     
@@ -129,7 +129,7 @@ if(uri.query && (uri.query.search !== "")) {
     
 } else {
     //on error or blank query print all movies
-    html = html + '<h2>All Movies</h2>' + arrayToHTMLList(movies)      
+    html = html + '<h2>All Movies</h2>' + arrayToTable(movies)      
 }
 
 //add javascript and closing tags if it is not an inline request
@@ -191,7 +191,7 @@ var html = printHTMLStart()
 
 html = html + '<h2>All Movies</h2>'
 console.log('sending movies')
-html = html + arrayToHTMLList(movies) 
+html = html + arrayToTable(movies) 
 
 html = html + printHTMLEnd()
 
@@ -210,11 +210,21 @@ fs.readFile(filename, function(error, content) {
 
 }
 
-function arrayToHTMLList(movieNames)
+function arrayToTable(movieNames)
 {
     var html = '<table>'
     html = html + '<thead><tr><th>Movie</th><th></th></tr</thead>'
     html = html + '<tbody>'
+    
+    //Add movie form
+    html = html + '<tr><td>'
+    html = html + '<form action="insert" method="post">'
+    html = html + '<input type="text" name="movie" id="insertbox" value="Enter a movie" autocomplete="off"/>'
+    html = html + '<button type="submit">Insert</button>'
+    html = html + '</form>' 
+    html = html + '</td></tr>'
+    
+    //Existing movies
     html = html + movieNames.map(createListItem).join(' ')    
     html = html + '</tbody></table>'
     
@@ -231,9 +241,10 @@ function createListItem(d)
     html = html + d    
     html = html + '</td><td><button name="movie" value="'
     html = html + d
-    html = html + '">Delete</button>'    
-    html = html + '</td></tr>'
+    html = html + '">Delete</button>' 
     html = html + '</form>' 
+    html = html + '</td></tr>'
+    
     
     return html
 }
