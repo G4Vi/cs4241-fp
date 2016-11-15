@@ -25,8 +25,8 @@ $('#insertbox').on('click focusin', function() {
     if(this.value == 'Enter a movie to insert')
     {
         this.value = '';
-        this.css({"font-style", "normal"});
-        this.css({"color", "#000000"});
+        //this.css({"font-style", "normal"});
+        //this.css({"color", "#000000"});
     }
 });
 
@@ -34,8 +34,8 @@ $('#searchbox').on('click focusin', function() {
     if(this.value == 'Enter a movie to search')
     {
         this.value = '';
-        this.css({"font-style", "normal"});
-        this.css({"color", "#000000"});
+        //this.css({"font-style", "normal"});
+        //this.css({"color", "#000000"});
     }
 });
 
