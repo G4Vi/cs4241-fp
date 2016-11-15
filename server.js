@@ -69,7 +69,8 @@ function handleDelete(req, res, uri){
             //check movies to see if its a valid post request and act
             console.log('removing')           
             var movie = post['movie']
-            removeMovieBlocking(movie)
+            //removeMovieBlocking(movie)
+            removeMovie(movie)
             
             //send it after removing.           
             sendIndex(res)                       
@@ -262,4 +263,35 @@ function removeMovieBlocking(movieName)
       console.log('array updated!')    
      
   } 
+}
+
+function removeMovie(movieName)
+{
+  //read the movies into data
+  fs.readFile(movieTXT, 'utf8', function (err,data) {
+  if (err) return console.log(err);
+  
+  //determine if string exists in file
+  var stringToSearch = escapeRegExp(movieName + '\n')  
+  var term = new RegExp( stringToSearch, 'g' )
+  var exists = data.search(term) >= 0
+  
+  //actually replacing it
+  if(exists){
+      var result = data.replace(term, '');
+      fs.writeFileSync(movieTXT, result, 'utf8')   
+      
+      //reload movies array
+      fs.readFile(movieTXT, (err, data) => {
+          if (err) return console.log(err);
+          movies = data.toString().split("\n");
+          console.log('array updated!')
+          
+      });
+      console.log('readfile inner done?')      
+  } 
+  
+});
+  console.log('readfile outer done?')
+
 }
