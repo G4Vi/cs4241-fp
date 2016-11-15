@@ -21,3 +21,13 @@ $(document).ready(function($) {
   }
 });
 
+$('#insertbox').on('click focusin', function() {
+    this.value = '';
+});
+
+/*
+var anentry = ""
+if($('#insertbox').is(':focus'))
+{    
+    $('#insertbox').val(anentry)
+}*/

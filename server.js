@@ -333,8 +333,9 @@ function removeMovie(movieName, res)
       //reload movies array
       fs.readFile(movieTXT, (err, data) => {
           if (err){
+              console.log(err)
               sendIndex(res)
-              return console.log(err);
+              return;
           }
           movies = data.toString().split("\n");
           console.log('array updated!')
@@ -364,8 +365,9 @@ function insertMovie(movieName, res)
         {
                fs.readFile(movieTXT, (err, data) => {
           if (err){
+              console.log(err)
               sendIndex(res)
-              return console.log(err);
+              return;
           }
           movies = data.toString().split("\n");
           console.log('array updated!')
