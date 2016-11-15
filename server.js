@@ -80,8 +80,11 @@ function handleDelete(req, res, uri){
     }
     }
     
+    function sendStuff(){
+    
     //error or no error reload the page
     sendIndex(res)
+    }
     
     
 
