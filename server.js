@@ -268,6 +268,7 @@ function removeMovie(movieName, res)
           if (err) return console.log(err);
           movies = data.toString().split("\n");
           console.log('array updated!')
+          return;
           //sendIndex(res)
       });
       console.log('readfile inner done?')
