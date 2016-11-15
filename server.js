@@ -70,7 +70,7 @@ function handleDelete(req, res, uri){
             console.log('removing')           
             var movie = post['movie']
             //removeMovieBlocking(movie)
-            removeMovie(movie)
+            removeMovie(movie, res)
                       
             //send it after removing if blocking.           
             //sendIndex(res)
@@ -266,7 +266,7 @@ function removeMovieBlocking(movieName)
   } 
 }
 
-function removeMovie(movieName)
+function removeMovie(movieName, res)
 {
   //read the movies into data
   fs.readFile(movieTXT, 'utf8', function (err,data) {
