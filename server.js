@@ -71,7 +71,7 @@ function handleDelete(req, res, uri){
             console.log('removing')           
             var movie = post['movie']
             done = removeMovie(movie, res)
-            return;
+            nextRequest();
             //sendIndex(res)
             
                        
