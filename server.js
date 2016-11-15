@@ -217,12 +217,12 @@ function arrayToTable(movieNames)
     html = html + '<tbody>'
     
     //Add movie form
-    html = html + '<tr><td>'
-    html = html + '<form action="insert" method="post">'
-    html = html + '<input type="text" name="movie" id="insertbox" value="Enter a movie" autocomplete="off"/>'
+    html = html + '<tr><form action="insert" method="post">'
+    html = html + '<td>'
+    html = html + '<input type="text" name="movie" id="insertbox" value="Enter a movie" autocomplete="off"/></td><td>'
     html = html + '<button type="submit">Insert</button>'
-    html = html + '</form>' 
-    html = html + '</td></tr>'
+    html = html + '</td></form>' 
+    html = html + '</tr>'
     
     //Existing movies
     html = html + movieNames.map(createListItem).join(' ')    
@@ -236,14 +236,13 @@ function createListItem(d)
 
     html = ''      
     
-    html = html + '<tr><td>'
-    html = html + '<form action="delete" method="post">'
+    html = html + '<tr><form action="delete" method="post"><td>'   
     html = html + d    
     html = html + '</td><td><button name="movie" value="'
     html = html + d
     html = html + '">Delete</button>' 
-    html = html + '</form>' 
-    html = html + '</td></tr>'
+    html = html + '</td></form>' 
+    html = html + '</tr>'
     
     
     return html
