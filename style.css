@@ -17,7 +17,7 @@ h1, h2, h3{
 .backimg{
 width: 100%;
 height: 100%;
-background-image: url('popcorn.png');
+/*background-image: url('popcorn.png');*/
 background-repeat: repeat;
 overflow:hidden;
 z-index:-1;

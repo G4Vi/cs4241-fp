@@ -36,9 +36,7 @@ switch( uri.pathname ) {
     case '/README.md':
     sendFile(res, 'README.md', 'text/plain')
     break
-    case '/popcorn.png':
-    sendFile(res, 'popcorn.png', 'image/png')
-    break   
+    
     default:
     res.end('404 not found')
 }
@@ -181,7 +179,7 @@ html = html + '<html>'
 
 html = html + '<head>'
 
-html = html + ' <title>CS4241 Assignment 4 - Gavin Hayes</title> <meta charset="utf-8"> <link rel="stylesheet" type="text/css" href="style.css"/>'
+html = html + ' <title>CS4241 Final Project - Gavin Hayes and Nick Chaput</title> <meta charset="utf-8"> <link rel="stylesheet" type="text/css" href="style.css"/>'
 html = html + '<link href="https://fonts.googleapis.com/css?family=Lato" rel="stylesheet">'
 
 html = html + '</head>'
@@ -190,14 +188,14 @@ html = html + '<body>'
 html = html + '<div class="backimg" id="popback">'
 html = html + '</div>'
 html = html + '<div class = "content">'
-html = html + '<h1>Movie Search</h1>'
+html = html + '<h1>Outline</h1>'
 
-html = html + '<form action="search" method="get">'
+/*html = html + '<form action="search" method="get">'
 html = html + '<input type="text" name="search" id="searchbox" value="Enter a movie to search" autocomplete="off"/>'
 html = html + '<button type="submit">Search</button>'
-html = html + '</form>'
+html = html + '</form>'*/
 
-html = html + '<div id=movielist>'
+html = html + '<div id=googledoc>'
 return html
 }
 
@@ -221,9 +219,7 @@ var contentType = 'text/html'
 
 var html = printHTMLStart()
 
-html = html + '<h2>All Movies</h2>'
-console.log('sending movies')
-html = html + arrayToTable(movies) 
+html += '<iframe src="https://docs.google.com/document/d/1cxTkJFr-B7OU0awR64GOLbRcYTjrzG91dbKz3zz62ik/pub?embedded=true"></iframe>'
 
 html = html + printHTMLEnd()
 
