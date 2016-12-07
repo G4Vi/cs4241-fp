@@ -2,13 +2,37 @@
 var http = require('http');
 var htmlparser = require('htmlparser2');
 
-var url = 'http://www.codingdefined.com'
+var events =  require('events');
 
-http.get(url, function(response) {
-  parseResponse(response);
+var pageProcessor = function (){
+    var self = this;
+
+    var pageEvents = new events.EventEmitter();
+
+    /*self.process = function (response, callback){
+        console.log("in process")
+    };*/
+
+    self.process = parseResponse;
+
+    //parseResponse(
+        //callback('sampletext');
+        //return 'sampletext';
+
+    /*
+    return 'string is ' + strurl;
+    }*/
+}
+
+module.exports = pageProcessor;
+
+Error.stackTraceLimit = Infinity;
+process.on('uncaughtException', function (er) {
+  console.error(er.stack)
+  process.exit(1)
 })
 
-var parseResponse = function(response) {
+function parseResponse (response, callback) {
   var data = "";
   response.on('data', function(chunk) {
     data += chunk;
@@ -35,5 +59,7 @@ var parseResponse = function(response) {
    parsedData.write(data);
    parsedData.end();
    console.log(tagsWithCount);
+   callback(tagsWithCount);
   });
-} 
+}
+

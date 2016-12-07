@@ -4,14 +4,14 @@ html{
 }
 
 body{
-background-color: #999999; 
+background-color: #999999;
  margin: 0 auto;
- font-family: "HelveticaNeue-Light", "Helvetica Neue Light", "Helvetica Neue", Helvetica, Arial, "Lucida Grande", sans-serif; 
+ font-family: "HelveticaNeue-Light", "Helvetica Neue Light", "Helvetica Neue", Helvetica, Arial, "Lucida Grande", sans-serif;
  height: 100%;
 }
 
 h1, h2, h3{
-    color: #FF3333;    
+    color: #FF3333;
 }
 
 .backimg{
@@ -29,7 +29,7 @@ top: 0;
 .content{
     padding-left:50px;
     z-index:9;
-    background-color: #999999; 
+    background-color: #999999;
     margin: 0 100px;
     top: 0;
     position: absolute;
@@ -38,7 +38,7 @@ top: 0;
 
 .content form{
     margin: 0;
-    padding: 0;    
+    padding: 0;
 }
 
 #searchbox{
@@ -51,7 +51,7 @@ top: 0;
 #insertbox{
     color: #a49f9e;
     font-style: italic;
-    width: 100%;
+    width: 60%;
 }
 
 /*#googledoc{
