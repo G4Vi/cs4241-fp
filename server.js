@@ -4,8 +4,11 @@ var http = require('http')
 , port = 8080
 , qs   = require('querystring');
 
-var movieTXT = 'top250.txt'
-var movies = fs.readFileSync(movieTXT).toString().split("\n");
+var config = require('./config')
+var mysql  = require('mysql');
+var validUrl = require('valid-url');
+
+//var movies = fs.readFileSync(movieTXT).toString().split("\n");
 
 var pageProcessor = require('./pageProcessor.js');
 var pageProcessorInstance = new pageProcessor();
@@ -75,34 +78,88 @@ function getPOST(req, res, uri){
 }
 
 function handleDoc(url, res){
-http.get(url, function(response) {
-     pageProcessorInstance.process(response, makehtml)
-})
 
-console.log('made request')
+//search database for the doc
+var connection = mysql.createConnection(config.database)
+connection.connect();
 
-function makehtml(obj){
+var escapedurl = mysql.escape(url)
+var query = 'SELECT * FROM `pages` WHERE `location` = "' + escapedurl + '"'
+console.log('handleDoc: ' + query)
+connection.query(query, function(err, rows, fields) {
+  if (err) throw err;
+
+  if(rows.length >= 1){
+      makehtml(JSON.parse(rows[0].json_tags), rows[0].html)
+  }
+  else{
+      performWebLookup();
+  }
+});
+
+
+//Download the page and parse it
+function performWebLookup(){
+if (validUrl.isUri(url)){
+    http.get(url, function(response) {
+    pageProcessorInstance.process(response, updateDB)
+    })
+    console.log('made request')
+    } else {
+        console.log('Not a URI');
+        makehtml('', '')
+    }
+}
+
+//Inserts new rows and updates existing with new information
+function updateDB(obj, data)
+{
+    var safe_obj_str = JSON.stringify(obj)
+    var page = {location: escapedurl, html: data, json_tags: safe_obj_str};
+    var pageUpdate = {html: data, json_tags: safe_obj_str};
+
+    var addAndUpdateQuery = 'INSERT INTO pages SET ? ON DUPLICATE KEY UPDATE ?'
+
+    console.log('updateDB: ' + addAndUpdateQuery)
+    connection.query(addAndUpdateQuery, [page, pageUpdate], function(err, rows, fields) {
+        if (err) throw err;
+    });
+
+    //output the html
+    makehtml(obj,data)
+}
+
+
+function makehtml(obj, data){
+
+//close db connection
+connection.end();
+
 var html = printHTMLStart()
 html += '<h2>' + url + '</h2>'
-html += '<table><tr><th>Tag</th><th>Count</th></tr>'
 
-//html += JSON.stringify(text)
+//Build table
+html += '<table><tr><th>Tag</th><th>Count</th></tr>'
 for(var counter in obj )
 {
-
-   // console.log(name)
-    console.log(obj[counter].name)
+    //console.log(obj[counter].name)
     html += '<tr><td>'+ obj[counter].name + ' </td>'
     html += '<td>' + obj[counter].count + '<td></tr>'
-    //html += text.name[el]
 }
 html += '</table>'
+
+//Display source code
+html += '<div id="srccode"><textarea>'
+html += data
+html += '</textarea></div>'
+
+
 html += printHTMLEnd()
 var contentType = 'text/html'
 res.writeHead(200, {'Content-type': contentType})
 res.end(html, 'utf-8')
-}
-}
+}//makehtml
+}//handleDoc
 
 function printHTMLStart()
 {

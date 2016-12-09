@@ -58,8 +58,8 @@ function parseResponse (response, callback) {
    }, {decodeEntities: true});
    parsedData.write(data);
    parsedData.end();
-   console.log(tagsWithCount);
-   callback(tagsWithCount);
+   //console.log(tagsWithCount);
+   callback(tagsWithCount, data);
   });
 }
 
