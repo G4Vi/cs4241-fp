@@ -64,9 +64,16 @@ function getPOST(req, res, uri){
             var post = qs.parse(body);
 
             console.log('Sending to doc ')
-            var doc = post['doc']
-            if(doc)
-            handleDoc(doc, res)
+            var url = post['url']
+            var text = post['text']
+            if(url)
+            {
+                handleUrl(url, res)
+            }
+            else if(text)
+            {
+                console.log(text)
+            }
 
         });
     }
@@ -77,7 +84,7 @@ function getPOST(req, res, uri){
 
 }
 
-function handleDoc(url, res){
+function handleUrl(url, res){
 
 //search database for the doc
 var connection = mysql.createConnection(config.database)
@@ -85,7 +92,7 @@ connection.connect();
 
 var escapedurl = mysql.escape(url)
 var query = 'SELECT * FROM `pages` WHERE `location` = "' + escapedurl + '"'
-console.log('handleDoc: ' + query)
+console.log('handleUrl: ' + query)
 connection.query(query, function(err, rows, fields) {
   if (err) throw err;
 
@@ -159,7 +166,7 @@ var contentType = 'text/html'
 res.writeHead(200, {'Content-type': contentType})
 res.end(html, 'utf-8')
 }//makehtml
-}//handleDoc
+}//handleUrl
 
 function printHTMLStart()
 {
@@ -181,9 +188,13 @@ html = html + '<h1>HTML Grader</h1>'
 
 html += '<h2>Enter a URL</h2>'
 html += '<form action="grade" method="post">'
-html = html + '<input type="text" name="doc" id="insertbox" value="http://computoid.com" autocomplete="off"/></td><td>'
+html = html + '<input type="text" name="url" id="insertbox" autocomplete="off"/></td><td>'
+html += '<h2>or paste your html here</h2>'
+html += '<textarea name="text"></textarea>'
+html += '<br>'
 html = html + '<button type="submit">Process</button>'
 html = html + '</form>'
+
 
 
 
@@ -210,7 +221,7 @@ function sendIndex(res) {
 
 var url = 'http://computoid.com'
 
-handleDoc(url, res)
+handleUrl(url, res)
 }
 
 function sendFile(res, filename, contentType) {

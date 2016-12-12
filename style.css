@@ -41,17 +41,13 @@ top: 0;
     padding: 0;
 }
 
-#searchbox{
-    width: 50%;
-    margin-right: 20px;
-    color: #a49f9e;
-    font-style: italic;
+#insertbox{
+    font-style: normal;
+    width: 60%;
 }
 
-#insertbox{
-    color: #a49f9e;
-    font-style: italic;
-    width: 60%;
+textarea{
+    width: 80%;
 }
 
 /*#googledoc{
