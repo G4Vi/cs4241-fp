@@ -32,7 +32,7 @@ process.on('uncaughtException', function (er) {
   process.exit(1)
 })
 
-function parseResponse (response, callback) {
+function parseResponse (response, callback, context) {
   var data = "";
   response.on('data', function(chunk) {
     data += chunk;
@@ -59,7 +59,7 @@ function parseResponse (response, callback) {
    parsedData.write(data);
    parsedData.end();
    //console.log(tagsWithCount);
-   callback(tagsWithCount, data);
+   callback(tagsWithCount, data, context);
   });
 }
 

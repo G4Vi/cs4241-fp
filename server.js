@@ -13,14 +13,61 @@ var validUrl = require('valid-url');
 var pageProcessor = require('./pageProcessor.js');
 var pageProcessorInstance = new pageProcessor();
 
+
+function handleGrade(body, res){
+    var post = qs.parse(body);
+    var url = post['url']
+    var text = post['text']
+
+
+    //open db connection
+    var connection = mysql.createConnection(config.database)
+    connection.connect();
+
+
+    //Determine submitted type
+    if(url)
+    {
+        handleUrl(url, res,connection)
+    }
+    else if(text)
+    {
+        handleText(text, res, connection)
+        console.log(text)
+    }
+};
+
 //INCOMING REQUESTS
 var server = http.createServer (function (req, res) {
 var uri = url.parse(req.url, true)
 
-switch( uri.pathname ) {
-    case '/grade':
-    getPOST(req, res, uri)
-    break
+    //POST Requests
+    if (req.method == 'POST') {
+        var body = '';
+
+        req.on('data', function (data) {
+            body += data;
+
+            //1MB max request size
+            if (body.length > 1e6)
+                req.connection.destroy();
+        });
+
+
+        switch( uri.pathname ) {
+             case '/grade':
+             var func = function(){ handleGrade(body, res)}
+              req.on('end',func)
+             break
+             default:
+             res.end('404 not found')
+         }
+
+
+    }
+    else{
+        //Get Requests
+        switch( uri.pathname ) {
     case '/':
     sendIndex(res)
     break
@@ -40,110 +87,93 @@ switch( uri.pathname ) {
     default:
     res.end('404 not found')
 }
+    }
+
+
 
 })
 
 server.listen(process.env.PORT || port)
 console.log('listening on 8080')
 
-function getPOST(req, res, uri){
 
-    //make sure its post
-    if (req.method == 'POST') {
-        var body = '';
+function handleText(text, res, context)
+{
+    var url = '666'
+    pageProcessorInstance.process(text,  updateDB, context)
+};
 
-        req.on('data', function (data) {
-            body += data;
-
-            //1MB max request size
-            if (body.length > 1e6)
-                req.connection.destroy();
-        });
-
-        req.on('end', function () {
-            var post = qs.parse(body);
-
-            console.log('Sending to doc ')
-            var url = post['url']
-            var text = post['text']
-            if(url)
-            {
-                handleUrl(url, res)
-            }
-            else if(text)
-            {
-                console.log(text)
-            }
-
-        });
-    }
-    else{
-        console.log("not post")
-        sendIndex(res)
-    }
-
-}
-
-function handleUrl(url, res){
-
-//search database for the doc
-var connection = mysql.createConnection(config.database)
-connection.connect();
-
+function handleUrl(url, res, connection){
+//Determine if url is in database
+console.log('url is ' +  url)
 var escapedurl = mysql.escape(url)
+console.log('escapedurl is ' + escapedurl)
 var query = 'SELECT * FROM `pages` WHERE `location` = "' + escapedurl + '"'
 console.log('handleUrl: ' + query)
+
+var context = new Object();
+context.escapedurl = escapedurl;
+context.connection = connection;
+context.res = res;
+context.url = url;
+
+console.log('logging context.escapedurl' + context.escapedurl)
+
 connection.query(query, function(err, rows, fields) {
   if (err) throw err;
 
   if(rows.length >= 1){
-      makehtml(JSON.parse(rows[0].json_tags), rows[0].html)
+      makehtml(JSON.parse(rows[0].json_tags), rows[0].html, context)
   }
   else{
-      performWebLookup();
+      performWebLookup(context);
   }
 });
 
 
 //Download the page and parse it
-function performWebLookup(){
+function performWebLookup(context){
+
 if (validUrl.isUri(url)){
     http.get(url, function(response) {
-    pageProcessorInstance.process(response, updateDB)
+
+    pageProcessorInstance.process(response, updateDB, context)
     })
     console.log('made request')
     } else {
         console.log('Not a URI');
-        makehtml('', '')
+        makehtml('', '', context)
     }
 }
 
+}//handleUrl
+
+
 //Inserts new rows and updates existing with new information
-function updateDB(obj, data)
+function updateDB(obj, data, context)
 {
     var safe_obj_str = JSON.stringify(obj)
-    var page = {location: escapedurl, html: data, json_tags: safe_obj_str};
+    var page = {location: context.escapedurl, html: data, json_tags: safe_obj_str};
     var pageUpdate = {html: data, json_tags: safe_obj_str};
 
     var addAndUpdateQuery = 'INSERT INTO pages SET ? ON DUPLICATE KEY UPDATE ?'
 
     console.log('updateDB: ' + addAndUpdateQuery)
-    connection.query(addAndUpdateQuery, [page, pageUpdate], function(err, rows, fields) {
+    context.connection.query(addAndUpdateQuery, [page, pageUpdate], function(err, rows, fields) {
         if (err) throw err;
     });
 
     //output the html
-    makehtml(obj,data)
+    makehtml(obj,data, context)
 }
 
 
-function makehtml(obj, data){
-
+function makehtml(obj, data, context){
 //close db connection
-connection.end();
+context.connection.end();
 
 var html = printHTMLStart()
-html += '<h2>' + url + '</h2>'
+html += '<h2>' + context.url + '</h2>'
 
 //Build table
 html += '<table><tr><th>Tag</th><th>Count</th></tr>'
@@ -163,10 +193,10 @@ html += '</textarea></div>'
 
 html += printHTMLEnd()
 var contentType = 'text/html'
-res.writeHead(200, {'Content-type': contentType})
-res.end(html, 'utf-8')
+context.res.writeHead(200, {'Content-type': contentType})
+context.res.end(html, 'utf-8')
 }//makehtml
-}//handleUrl
+
 
 function printHTMLStart()
 {
@@ -219,9 +249,12 @@ return html
 function sendIndex(res) {
 //html += '<iframe src="https://docs.google.com/document/d/1cxTkJFr-B7OU0awR64GOLbRcYTjrzG91dbKz3zz62ik/pub?embedded=true"></iframe>'
 
-var url = 'http://computoid.com'
+//open db connection
+var connection = mysql.createConnection(config.database)
+connection.connect();
 
-handleUrl(url, res)
+var url = 'http://computoid.com'
+handleUrl(url, res, connection)
 }
 
 function sendFile(res, filename, contentType) {
