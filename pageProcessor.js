@@ -15,6 +15,8 @@ var pageProcessor = function (){
 
     self.process = parseResponse;
 
+    self.processText = parseData;
+
     //parseResponse(
         //callback('sampletext');
         //return 'sampletext';
@@ -33,15 +35,23 @@ process.on('uncaughtException', function (er) {
 })
 
 function parseResponse (response, callback, context) {
-  var data = "";
+  context.data = "";
   response.on('data', function(chunk) {
     data += chunk;
   });
-  var tags = [];
+  response.on('end', parseData)
+
+
+
+};
+
+  function parseData(callback, context)
+  {
+      var tags = [];
   var tagsCount = {};
   var tagsWithCount = [];
-  response.on('end', function(chunk) {
-    var parsedData = new htmlparser.Parser({
+      console.log('parsing')
+      var parsedData = new htmlparser.Parser({
      onopentag: function(name, attribs) {
       if(tags.indexOf(name) === -1) {
        tags.push(name);
@@ -56,10 +66,11 @@ function parseResponse (response, callback, context) {
      }
     }
    }, {decodeEntities: true});
-   parsedData.write(data);
+   parsedData.write(context.data);
    parsedData.end();
    //console.log(tagsWithCount);
-   callback(tagsWithCount, data, context);
-  });
-}
+   callback(tagsWithCount, context);
+  };
+
+
 

@@ -14,29 +14,6 @@ var pageProcessor = require('./pageProcessor.js');
 var pageProcessorInstance = new pageProcessor();
 
 
-function handleGrade(body, res){
-    var post = qs.parse(body);
-    var url = post['url']
-    var text = post['text']
-
-
-    //open db connection
-    var connection = mysql.createConnection(config.database)
-    connection.connect();
-
-
-    //Determine submitted type
-    if(url)
-    {
-        handleUrl(url, res,connection)
-    }
-    else if(text)
-    {
-        handleText(text, res, connection)
-        console.log(text)
-    }
-};
-
 //INCOMING REQUESTS
 var server = http.createServer (function (req, res) {
 var uri = url.parse(req.url, true)
@@ -71,6 +48,9 @@ var uri = url.parse(req.url, true)
     case '/':
     sendIndex(res)
     break
+    case '/page':
+    handlePage(res, uri)
+    break;
     case '/index.html': //incase a webbrowser requests the site by this
     sendIndex(res)
     break
@@ -96,30 +76,89 @@ var uri = url.parse(req.url, true)
 server.listen(process.env.PORT || port)
 console.log('listening on 8080')
 
-
-function handleText(text, res, context)
+function handlePage(res, uri)
 {
-    var url = '666'
-    pageProcessorInstance.process(text,  updateDB, context)
+    if(uri.query && (uri.query.id !== "")) {
+    console.log(uri.query)
+
+     //open db connection
+    var connection = mysql.createConnection(config.database)
+    connection.connect();
+
+    var context = new Object();
+    context.connection = connection;
+    context.res = res;
+
+    var query = 'SELECT * FROM `pages` WHERE `ID` = ' + mysql.escape(uri.query.id)
+    console.log('handlePage: ' + query)
+
+    context.connection.query(query, function(err, rows, fields) {
+    if (err) throw err;
+
+    if(rows.length >= 1){
+    context.htmlLocation = rows[0].location
+    makehtml(JSON.parse(rows[0].json_tags), rows[0].html, context)
+    }
+    else{
+    //close db
+    context.connection.end();
+    res.end('404 not found')
+
+    }
+});
+
+
+
+} else {
+    //on error or blank query print all movies
+    //html = html + '<h2>All Movies</h2>' + arrayToTable(movies)
+}
+}
+
+function handleGrade(body, res){
+    var post = qs.parse(body);
+    var url = post['url']
+    var text = post['text']
+
+
+    //open db connection
+    var connection = mysql.createConnection(config.database)
+    connection.connect();
+
+    var context = new Object();
+    context.connection = connection;
+    context.res = res;
+    context.url = url;
+
+    //Determine submitted type
+    if(url)
+    {
+        handleUrl(context)
+    }
+    else if(text)
+    {
+        handleText(text, context)
+    }
 };
 
-function handleUrl(url, res, connection){
+
+function handleText(text, context)
+{
+    context.htmlLocation = 'Pasted HTML'
+    context.data = text;
+    pageProcessorInstance.processText(updateDB, context)
+};
+
+function handleUrl(context){
 //Determine if url is in database
-console.log('url is ' +  url)
-var escapedurl = mysql.escape(url)
-console.log('escapedurl is ' + escapedurl)
-var query = 'SELECT * FROM `pages` WHERE `location` = "' + escapedurl + '"'
+var escapedurl = mysql.escape(context.url)
+context.htmlLocation = escapedurl;
+console.log('logging context.htmlLocation' + context.htmlLocation)
+
+var query = 'SELECT * FROM `pages` WHERE `location` = "' + context.htmlLocation + '"'
 console.log('handleUrl: ' + query)
 
-var context = new Object();
-context.escapedurl = escapedurl;
-context.connection = connection;
-context.res = res;
-context.url = url;
-
-console.log('logging context.escapedurl' + context.escapedurl)
-
-connection.query(query, function(err, rows, fields) {
+context.connection.query(query, function(err, rows, fields) {
   if (err) throw err;
 
   if(rows.length >= 1){
@@ -150,11 +189,11 @@ if (validUrl.isUri(url)){
 
 
 //Inserts new rows and updates existing with new information
-function updateDB(obj, data, context)
+function updateDB(obj, context)
 {
     var safe_obj_str = JSON.stringify(obj)
-    var page = {location: context.escapedurl, html: data, json_tags: safe_obj_str};
-    var pageUpdate = {html: data, json_tags: safe_obj_str};
+    var page = {location: context.htmlLocation, html: context.data, json_tags: safe_obj_str};
+    var pageUpdate = {html: context.data, json_tags: safe_obj_str};
 
     var addAndUpdateQuery = 'INSERT INTO pages SET ? ON DUPLICATE KEY UPDATE ?'
 
@@ -164,7 +203,7 @@ function updateDB(obj, data, context)
     });
 
     //output the html
-    makehtml(obj,data, context)
+    makehtml(obj,context.data, context)
 }
 
 
@@ -173,7 +212,7 @@ function makehtml(obj, data, context){
 context.connection.end();
 
 var html = printHTMLStart()
-html += '<h2>' + context.url + '</h2>'
+html += '<h2>' + context.htmlLocation + '</h2>'
 
 //Build table
 html += '<table><tr><th>Tag</th><th>Count</th></tr>'
@@ -253,8 +292,12 @@ function sendIndex(res) {
 var connection = mysql.createConnection(config.database)
 connection.connect();
 
-var url = 'http://computoid.com'
-handleUrl(url, res, connection)
+var context = new Object();
+context.connection = connection;
+context.res = res;
+context.url = 'http://computoid.com';
+
+handleUrl(context)
 }
 
 function sendFile(res, filename, contentType) {
