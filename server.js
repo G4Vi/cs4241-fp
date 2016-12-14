@@ -60,6 +60,12 @@ var server = http.createServer(function(req, res) {
             case '/js/scripts.js':
                 sendFile(res, 'js/scripts.js', 'text/javascript')
                 break
+            case '/js/datavis.js':
+                sendFile(res, 'js/datavis.js', 'text/javascript')
+                break
+            case '/js/d3.min.js':
+                sendFile(res, 'js/d3.min.js', 'text/javascript')
+                break
             case '/README.md':
                 sendFile(res, 'README.md', 'text/plain')
                 break
@@ -340,6 +346,8 @@ function printHTMLEnd() {
 
     html = html + '<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>'
     html = html + '<script src="js/scripts.js"></script>'
+    html = html + '<script type="text/javascript" src="d3.min.js"></script>'
+    html = html + '<script type="text/javascript" src="datavis.js"></script>'
 
     html = html + '</body>'
     html = html + '</html>'
