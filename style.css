@@ -72,3 +72,19 @@ iframe{
     height: 1200px;
     min-height: 100%;
 }
+
+/*Styling for DataVis*/
+.chart rect {
+    fill: steelblue;
+}
+
+.chart text {
+    fill: white;
+    font: 10px sans-serif;
+    text-anchor: end;
+}
+
+.bardata {
+    display: none;
+}
+/*End Styling for DataVis*/

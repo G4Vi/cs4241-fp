@@ -224,13 +224,21 @@ Page.prototype.toHTML = function() {
     html += 'page?id=' + self.id
     html += '">Permalink' + '</a>'
 
-    //Build table
+   /* //Build table
     html += '<table><tr><th>Tag</th><th>Count</th></tr>'
     for (var counter in self.tags) {
         html += '<tr><td>' + self.tags[counter].name + ' </td>'
         html += '<td>' + self.tags[counter].count + '<td></tr>'
     }
-    html += '</table>'
+    html += '</table>'*/
+
+
+
+    html += '<div class="chart" id="chart">'
+    for (var counter in self.tags) {
+        html += '<p class="bardata">' + self.tags[counter].name + ' ' + self.tags[counter].count + '</p>'
+    }
+    html += '</div>'
 
     //Display source code
     html += '<div><textarea id="srccode" readonly>'
