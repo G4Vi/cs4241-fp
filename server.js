@@ -86,7 +86,7 @@ function handleID(res, uri) {
 
         var id = mysql.escape(uri.query.id)
 
-       var aPage = new Page(undefined, undefined, id, connection, res)
+        var aPage = new Page(undefined, undefined, id, connection, res)
 
 
     } else {
@@ -104,22 +104,22 @@ function handleGrade(body, res) {
     var connection = mysql.createConnection(config.database)
     connection.connect();
 
-    var aPage = new Page(url, text, '',  connection, res)
+    var aPage = new Page(url, text, '', connection, res)
 
 
 };
 
 //Page class
-function Page(__url, __text, __id,  __connection, __res) {
+function Page(__url, __text, __id, __connection, __res) {
     var self = this //I've had enough of this
 
-    self.url  = __url
+    self.url = __url
     self.text = __text
     self.connection = __connection
-    self.res  = __res
+    self.res = __res
     self.data = ''
     self.htmlLocation = ''
-    self.id   = -1
+    self.id = -1
     self.tags = null
 
     //Determine submitted type
@@ -128,8 +128,7 @@ function Page(__url, __text, __id,  __connection, __res) {
     } else if (self.text) {
         self.data = self.text
         self.processText()
-    } else if(__id) {
-        console.log('__id is ' + __id)
+    } else if (__id) {
         self.processRequest(__id)
     }
 }
@@ -137,15 +136,14 @@ function Page(__url, __text, __id,  __connection, __res) {
 Page.prototype.processText = function() {
     var self = this
     self.htmlLocation = 'Pasted HTML'
-    pageProcessorInstance.processText(updateDB, self)
-    };
+    pageProcessorInstance.processText(self.update, self)
+};
 
-Page.prototype.processUrl= function() {
+Page.prototype.processUrl = function() {
     var self = this
 
     //Determine if url is in database
     self.htmlLocation = mysql.escape(self.url)
-    console.log('logging Page.htmlLocation' + self.htmlLocation)
 
     var query = 'SELECT * FROM `pages` WHERE `location` = "' + self.htmlLocation + '"'
     console.log('processUrl: ' + query)
@@ -156,10 +154,9 @@ Page.prototype.processUrl= function() {
         if (rows.length >= 1) {
             self.id = rows[0].ID
 
-           console.log('self.url is ' + self.url)
-           self.data = rows[0].html
-           self.tags = JSON.parse(rows[0].json_tags)
-           sendWebpage(self.toHTML(), self.res, 200, self.connection)
+            self.data = rows[0].html
+            self.tags = JSON.parse(rows[0].json_tags)
+            sendWebpage(self.toHTML(), self.res, 200, self.connection)
         } else {
             performWebLookup();
         }
@@ -172,7 +169,7 @@ Page.prototype.processUrl= function() {
         if (validUrl.isUri(self.url)) {
             http.get(self.url, function(response) {
 
-                pageProcessorInstance.process(response, updateDB, self)
+                pageProcessorInstance.process(response, self.update, self)
             })
             console.log('made request')
         } else {
@@ -183,30 +180,30 @@ Page.prototype.processUrl= function() {
         }
     }
 
-    }; //processUrl
+}; //processUrl
 
 Page.prototype.processRequest = function(id) {
-        var self = this
+    var self = this
 
-        var query = 'SELECT * FROM `pages` WHERE `ID` = ' + id
-        console.log('processRequest: ' + query)
+    var query = 'SELECT * FROM `pages` WHERE `ID` = ' + id
+    console.log('processRequest: ' + query)
 
-        self.connection.query(query, function(err, rows, fields) {
-            if (err) throw err;
+    self.connection.query(query, function(err, rows, fields) {
+        if (err) throw err;
 
-            if (rows.length >= 1) {
-                self.htmlLocation = rows[0].location
-                self.id = rows[0].ID
-                self.data = rows[0].html
-                self.tags = JSON.parse(rows[0].json_tags)
-                sendWebpage(self.toHTML(), self.res, 200, self.connection)
+        if (rows.length >= 1) {
+            self.htmlLocation = rows[0].location
+            self.id = rows[0].ID
+            self.data = rows[0].html
+            self.tags = JSON.parse(rows[0].json_tags)
+            sendWebpage(self.toHTML(), self.res, 200, self.connection)
                 //makehtml(JSON.parse(rows[0].json_tags), rows[0].html, self)
-            } else {
-                //close db
-                sendWebpage('404 File Not Found', self.res, 404, self.connection)
+        } else {
+            //close db
+            sendWebpage('404 File Not Found', self.res, 404, self.connection)
 
-            }
-        });
+        }
+    });
 
 };
 
@@ -230,7 +227,7 @@ Page.prototype.toHTML = function() {
     html += '</table>'
 
     //Display source code
-    html += '<div id="srccode"><textarea>'
+    html += '<div><textarea id="srccode" readonly>'
     html += self.data
     html += '</textarea></div>'
 
@@ -240,38 +237,42 @@ Page.prototype.toHTML = function() {
 
 
 //Inserts new rows and updates existing with new information
-function updateDB(obj, context) {
+Page.prototype.update = function(obj, context) {
+    if (!context) {
+        var self = this;
+    } else {
+        var self = context;
+    }
+
     var safe_obj_str = JSON.stringify(obj)
     var page = {
-        location: context.htmlLocation,
-        html: context.data,
+        location: self.htmlLocation,
+        html: self.data,
         json_tags: safe_obj_str
     };
     var pageUpdate = {
-        html: context.data,
+        html: self.data,
         json_tags: safe_obj_str
     };
 
     var addAndUpdateQuery = 'INSERT INTO pages SET ? ON DUPLICATE KEY UPDATE ?'
 
-    console.log('updateDB: ' + addAndUpdateQuery)
-    context.connection.query(addAndUpdateQuery, [page, pageUpdate], function(err, result) {
+    console.log('update: ' + addAndUpdateQuery)
+    self.connection.query(addAndUpdateQuery, [page, pageUpdate], function(err, result) {
         if (err) throw err;
 
         console.log(result)
-        context.id = result.insertId
-
-        context.data
-        context.tags = obj
-        sendWebpage(context.toHTML(), context.res, 200, context.connection)
+        self.id = result.insertId
+        self.tags = obj
+        sendWebpage(self.toHTML(), self.res, 200, self.connection)
     });
 
 
 }
 
-function sendWebpage(content_html, res, code, connection){
+function sendWebpage(content_html, res, code, connection) {
     //close db
-    if(connection){
+    if (connection) {
         console.log('sendWebpage has connection')
         connection.end()
     }
@@ -287,7 +288,7 @@ function sendWebpage(content_html, res, code, connection){
 
     //WriteHeadder
     var contentType = 'text/html'
-    if(!code){
+    if (!code) {
         code = 200
     }
     console.log('code is ' + code)
@@ -322,7 +323,7 @@ function printHTMLStart() {
     html += '<form action="grade" method="post">'
     html = html + '<input type="text" name="url" id="insertbox" autocomplete="off"/></td><td>'
     html += '<h2>or paste your html here</h2>'
-    html += '<textarea name="text"></textarea>'
+    html += '<textarea name="text" id="inputcode"></textarea>'
     html += '<br>'
     html = html + '<button type="submit">Process</button>'
     html = html + '</form>'
@@ -505,60 +506,4 @@ function insertMovie(movieName, res)
 });
 }
 
-
- function handleSearch(res, uri) {
-var contentType = 'text/html'
-res.writeHead(200, {'Content-type': contentType})
-
-var html = ''
-//if printing the whole page (not ajax) print the items above the movie list
-if(uri.query && (!uri.query.inline))
-{
-    html = printHTMLStart()
-}
-
-//if there is a search query
-if(uri.query && (uri.query.search !== "")) {
-    console.log(uri.query)
-
-    var filteredMovies = [];
-
-    //loop through all the movies and try to match substrings
-    for(var i = 0; i < movies.length; i++)
-    {
-        var term = new RegExp( escapeRegExp(uri.query.search), 'i' )
-        var result = movies[i].match(term)
-        if(result)
-        {
-            filteredMovies.push(movies[i])
-        }
-    }
-
-    //if no movies found
-    if(filteredMovies.length == 0)
-    {
-        html = html + '<h2>No movies names with: "' + uri.query.search + '"</h2>'
-    }
-    else //movies found
-    {
-        html = html + '<h2>Movies with "' + uri.query.search + '" in the name</h2>' + arrayToTable(filteredMovies)
-    }
-
-
-
-
-} else {
-    //on error or blank query print all movies
-    html = html + '<h2>All Movies</h2>' + arrayToTable(movies)
-}
-
-//add javascript and closing tags if it is not an inline request
-if(!uri.query.inline)
-{
-    html = html + printHTMLEnd()
-}
-
-//finally send it
-res.end(html)
-}
 */

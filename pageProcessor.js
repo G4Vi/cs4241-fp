@@ -6,23 +6,11 @@ var events = require('events');
 var pageProcessor = function() {
     var self = this;
 
-    var pageEvents = new events.EventEmitter();
-
-    /*self.process = function (response, callback){
-        console.log("in process")
-    };*/
+    //var pageEvents = new events.EventEmitter();
 
     self.process = parseResponse;
 
     self.processText = parseData;
-
-    //parseResponse(
-    //callback('sampletext');
-    //return 'sampletext';
-
-    /*
-    return 'string is ' + strurl;
-    }*/
 }
 
 module.exports = pageProcessor;
@@ -76,5 +64,5 @@ function parseData(callback, context) {
     parsedData.write(context.data);
     parsedData.end();
 
-    callback(tagsWithCount, context);
+    callback(tagsWithCount, context)
 };
