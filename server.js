@@ -38,7 +38,7 @@ var server = http.createServer(function(req, res) {
                 req.on('end', func)
                 break
             default:
-                res.end('404 not found')
+                sendWebpage('404 File Not Found', res, 404)
         }
 
 
@@ -46,13 +46,13 @@ var server = http.createServer(function(req, res) {
         //Get Requests
         switch (uri.pathname) {
             case '/':
-                sendIndex(res)
+                handleIndex(res)
                 break
             case '/page':
-                handlePage(res, uri)
+                handleID(res, uri)
                 break;
             case '/index.html': //incase a webbrowser requests the site by this
-                sendIndex(res)
+                handleIndex(res)
                 break
             case '/style.css':
                 sendFile(res, 'style.css', 'text/css')
@@ -65,7 +65,7 @@ var server = http.createServer(function(req, res) {
                 break
 
             default:
-                res.end('404 not found')
+                sendWebpage('404 File Not Found', res, 404)
         }
     }
 
@@ -76,7 +76,7 @@ var server = http.createServer(function(req, res) {
 server.listen(process.env.PORT || port)
 console.log('listening on 8080')
 
-function handlePage(res, uri) {
+function handleID(res, uri) {
     if (uri.query && (uri.query.id !== "")) {
         console.log(uri.query)
 
@@ -84,33 +84,13 @@ function handlePage(res, uri) {
         var connection = mysql.createConnection(config.database)
         connection.connect();
 
-        var context = new Object();
-        context.connection = connection;
-        context.res = res;
+        var id = mysql.escape(uri.query.id)
 
-        var query = 'SELECT * FROM `pages` WHERE `ID` = ' + mysql.escape(uri.query.id)
-        console.log('handlePage: ' + query)
-
-        context.connection.query(query, function(err, rows, fields) {
-            if (err) throw err;
-
-            if (rows.length >= 1) {
-                context.htmlLocation = rows[0].location
-                context.id = rows[0].ID
-                makehtml(JSON.parse(rows[0].json_tags), rows[0].html, context)
-            } else {
-                //close db
-                context.connection.end();
-                res.end('404 not found')
-
-            }
-        });
-
+       var aPage = new Page(undefined, undefined, id, connection, res)
 
 
     } else {
-        //on error or blank query print all movies
-        //html = html + '<h2>All Movies</h2>' + arrayToTable(movies)
+        sendWebpage('404 File Not Found', res, 404)
     }
 }
 
@@ -124,63 +104,139 @@ function handleGrade(body, res) {
     var connection = mysql.createConnection(config.database)
     connection.connect();
 
-    var context = new Object();
-    context.connection = connection;
-    context.res = res;
-    context.url = url;
+    var aPage = new Page(url, text, '',  connection, res)
+
+
+};
+
+//Page class
+function Page(__url, __text, __id,  __connection, __res) {
+    var self = this //I've had enough of this
+
+    self.url  = __url
+    self.text = __text
+    self.connection = __connection
+    self.res  = __res
+    self.data = ''
+    self.htmlLocation = ''
+    self.id   = -1
+    self.tags = null
 
     //Determine submitted type
-    if (url) {
-        handleUrl(context)
-    } else if (text) {
-        context.data = text;
-        handleText(context)
+    if (self.url) {
+        self.processUrl()
+    } else if (self.text) {
+        self.data = self.text
+        self.processText()
+    } else if(__id) {
+        console.log('__id is ' + __id)
+        self.processRequest(__id)
     }
-};
+}
 
+Page.prototype.processText = function() {
+    var self = this
+    self.htmlLocation = 'Pasted HTML'
+    pageProcessorInstance.processText(updateDB, self)
+    };
 
-function handleText(context) {
-    context.htmlLocation = 'Pasted HTML'
-    pageProcessorInstance.processText(updateDB, context)
-};
+Page.prototype.processUrl= function() {
+    var self = this
 
-function handleUrl(context) {
     //Determine if url is in database
-    var escapedurl = mysql.escape(context.url)
-    context.htmlLocation = escapedurl;
-    console.log('logging context.htmlLocation' + context.htmlLocation)
+    self.htmlLocation = mysql.escape(self.url)
+    console.log('logging Page.htmlLocation' + self.htmlLocation)
 
-    var query = 'SELECT * FROM `pages` WHERE `location` = "' + context.htmlLocation + '"'
-    console.log('handleUrl: ' + query)
+    var query = 'SELECT * FROM `pages` WHERE `location` = "' + self.htmlLocation + '"'
+    console.log('processUrl: ' + query)
 
-    context.connection.query(query, function(err, rows, fields) {
+    this.connection.query(query, function(err, rows, fields) {
         if (err) throw err;
 
         if (rows.length >= 1) {
-            context.id = rows[0].ID
-            makehtml(JSON.parse(rows[0].json_tags), rows[0].html, context)
+            self.id = rows[0].ID
+
+           console.log('self.url is ' + self.url)
+           self.data = rows[0].html
+           self.tags = JSON.parse(rows[0].json_tags)
+           sendWebpage(self.toHTML(), self.res, 200, self.connection)
         } else {
-            performWebLookup(context);
+            performWebLookup();
         }
     });
 
 
     //Download the page and parse it
-    function performWebLookup(context) {
+    function performWebLookup() {
 
-        if (validUrl.isUri(context.url)) {
-            http.get(context.url, function(response) {
+        if (validUrl.isUri(self.url)) {
+            http.get(self.url, function(response) {
 
-                pageProcessorInstance.process(response, updateDB, context)
+                pageProcessorInstance.process(response, updateDB, self)
             })
             console.log('made request')
         } else {
             console.log('Not a URI');
-            makehtml('', '', context)
+            self.data = rows[0].html
+            self.tags = JSON.parse(rows[0].json_tags)
+            sendWebpage('<h1>Not a Uri</h1>', self.res, 503, self.connection)
         }
     }
 
-} //handleUrl
+    }; //processUrl
+
+Page.prototype.processRequest = function(id) {
+        var self = this
+
+        var query = 'SELECT * FROM `pages` WHERE `ID` = ' + id
+        console.log('processRequest: ' + query)
+
+        self.connection.query(query, function(err, rows, fields) {
+            if (err) throw err;
+
+            if (rows.length >= 1) {
+                self.htmlLocation = rows[0].location
+                self.id = rows[0].ID
+                self.data = rows[0].html
+                self.tags = JSON.parse(rows[0].json_tags)
+                sendWebpage(self.toHTML(), self.res, 200, self.connection)
+                //makehtml(JSON.parse(rows[0].json_tags), rows[0].html, self)
+            } else {
+                //close db
+                sendWebpage('404 File Not Found', self.res, 404, self.connection)
+
+            }
+        });
+
+};
+
+Page.prototype.toHTML = function() {
+    var self = this;
+
+    var html = ''
+    html += '<h2>' + self.htmlLocation + '</h2>'
+
+    //permalink
+    html += '<a href="'
+    html += 'page?id=' + self.id
+    html += '">Permalink' + '</a>'
+
+    //Build table
+    html += '<table><tr><th>Tag</th><th>Count</th></tr>'
+    for (var counter in self.tags) {
+        html += '<tr><td>' + self.tags[counter].name + ' </td>'
+        html += '<td>' + self.tags[counter].count + '<td></tr>'
+    }
+    html += '</table>'
+
+    //Display source code
+    html += '<div id="srccode"><textarea>'
+    html += self.data
+    html += '</textarea></div>'
+
+    return html;
+}; //toHTML
+
 
 
 //Inserts new rows and updates existing with new information
@@ -205,48 +261,44 @@ function updateDB(obj, context) {
         console.log(result)
         context.id = result.insertId
 
-        //output the html
-        makehtml(obj, context.data, context)
+        context.data
+        context.tags = obj
+        sendWebpage(context.toHTML(), context.res, 200, context.connection)
     });
 
 
 }
 
-
-function makehtml(obj, data, context) {
-    //close db connection
-    context.connection.end();
-
-    var html = printHTMLStart()
-    html += '<h2>' + context.htmlLocation + '</h2>'
-
-    //permalink
-    html += '<a href="'
-    html += 'page?id=' + context.id
-    html += '">Permalink' + '</a>'
-
-    //Build table
-    html += '<table><tr><th>Tag</th><th>Count</th></tr>'
-    for (var counter in obj) {
-        //console.log(obj[counter].name)
-        html += '<tr><td>' + obj[counter].name + ' </td>'
-        html += '<td>' + obj[counter].count + '<td></tr>'
+function sendWebpage(content_html, res, code, connection){
+    //close db
+    if(connection){
+        console.log('sendWebpage has connection')
+        connection.end()
     }
-    html += '</table>'
 
-    //Display source code
-    html += '<div id="srccode"><textarea>'
-    html += data
-    html += '</textarea></div>'
+    //Top of page
+    var html = printHTMLStart()
 
+    //content
+    html += content_html
 
+    //Bottom of page
     html += printHTMLEnd()
+
+    //WriteHeadder
     var contentType = 'text/html'
-    context.res.writeHead(200, {
+    if(!code){
+        code = 200
+    }
+    console.log('code is ' + code)
+    res.writeHead(code, {
         'Content-type': contentType
     })
-    context.res.end(html, 'utf-8')
-} //makehtml
+
+    res.end(html, 'utf-8')
+};
+
+
 
 
 function printHTMLStart() {
@@ -280,7 +332,7 @@ function printHTMLStart() {
 
     html = html + '<div id="results">'
     return html
-}
+};
 
 function printHTMLEnd() {
     var html = '</div></div>'
@@ -293,22 +345,18 @@ function printHTMLEnd() {
 
     return html
 
-}
+};
 
-function sendIndex(res) {
+function handleIndex(res) {
     //html += '<iframe src="https://docs.google.com/document/d/1cxTkJFr-B7OU0awR64GOLbRcYTjrzG91dbKz3zz62ik/pub?embedded=true"></iframe>'
 
     //open db connection
     var connection = mysql.createConnection(config.database)
     connection.connect();
 
-    var context = new Object();
-    context.connection = connection;
-    context.res = res;
-    context.url = 'http://computoid.com';
+    var aPage = new Page('http://computoid.com', '', '', connection, res)
 
-    handleUrl(context)
-}
+};
 
 function sendFile(res, filename, contentType) {
     contentType = contentType || 'text/html'
