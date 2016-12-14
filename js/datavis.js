@@ -3,7 +3,7 @@ var DV; //global namespace for Data Visualization constants and functions
     "use strict";
 
     DV = {
-        
+
     };//end of DV namespace
 
 }() )

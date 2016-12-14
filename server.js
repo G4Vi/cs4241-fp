@@ -346,8 +346,8 @@ function printHTMLEnd() {
 
     html = html + '<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>'
     html = html + '<script src="js/scripts.js"></script>'
-    html = html + '<script type="text/javascript" src="d3.min.js"></script>'
-    html = html + '<script type="text/javascript" src="datavis.js"></script>'
+    html = html + '<script type="text/javascript" src="js/d3.min.js"></script>'
+    html = html + '<script type="text/javascript" src="js/datavis.js"></script>'
 
     html = html + '</body>'
     html = html + '</html>'
