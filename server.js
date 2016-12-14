@@ -1,11 +1,11 @@
-var http = require('http')
-, fs   = require('fs')
-, url  = require('url')
-, port = 8080
-, qs   = require('querystring');
+var http = require('http'),
+    fs = require('fs'),
+    url = require('url'),
+    port = 8080,
+    qs = require('querystring');
 
 var config = require('./config')
-var mysql  = require('mysql');
+var mysql = require('mysql');
 var validUrl = require('valid-url');
 
 //var movies = fs.readFileSync(movieTXT).toString().split("\n");
@@ -15,14 +15,13 @@ var pageProcessorInstance = new pageProcessor();
 
 
 //INCOMING REQUESTS
-var server = http.createServer (function (req, res) {
-var uri = url.parse(req.url, true)
-
-    //POST Requests
+var server = http.createServer(function(req, res) {
+    var uri = url.parse(req.url, true)
+        //POST Requests
     if (req.method == 'POST') {
         var body = '';
 
-        req.on('data', function (data) {
+        req.on('data', function(data) {
             body += data;
 
             //1MB max request size
@@ -31,42 +30,43 @@ var uri = url.parse(req.url, true)
         });
 
 
-        switch( uri.pathname ) {
-             case '/grade':
-             var func = function(){ handleGrade(body, res)}
-              req.on('end',func)
-             break
-             default:
-             res.end('404 not found')
-         }
+        switch (uri.pathname) {
+            case '/grade':
+                var func = function() {
+                    handleGrade(body, res)
+                }
+                req.on('end', func)
+                break
+            default:
+                res.end('404 not found')
+        }
 
 
-    }
-    else{
+    } else {
         //Get Requests
-        switch( uri.pathname ) {
-    case '/':
-    sendIndex(res)
-    break
-    case '/page':
-    handlePage(res, uri)
-    break;
-    case '/index.html': //incase a webbrowser requests the site by this
-    sendIndex(res)
-    break
-    case '/style.css':
-    sendFile(res, 'style.css', 'text/css')
-    break
-    case '/js/scripts.js':
-    sendFile(res, 'js/scripts.js', 'text/javascript')
-    break
-    case '/README.md':
-    sendFile(res, 'README.md', 'text/plain')
-    break
+        switch (uri.pathname) {
+            case '/':
+                sendIndex(res)
+                break
+            case '/page':
+                handlePage(res, uri)
+                break;
+            case '/index.html': //incase a webbrowser requests the site by this
+                sendIndex(res)
+                break
+            case '/style.css':
+                sendFile(res, 'style.css', 'text/css')
+                break
+            case '/js/scripts.js':
+                sendFile(res, 'js/scripts.js', 'text/javascript')
+                break
+            case '/README.md':
+                sendFile(res, 'README.md', 'text/plain')
+                break
 
-    default:
-    res.end('404 not found')
-}
+            default:
+                res.end('404 not found')
+        }
     }
 
 
@@ -76,46 +76,45 @@ var uri = url.parse(req.url, true)
 server.listen(process.env.PORT || port)
 console.log('listening on 8080')
 
-function handlePage(res, uri)
-{
-    if(uri.query && (uri.query.id !== "")) {
-    console.log(uri.query)
+function handlePage(res, uri) {
+    if (uri.query && (uri.query.id !== "")) {
+        console.log(uri.query)
 
-     //open db connection
-    var connection = mysql.createConnection(config.database)
-    connection.connect();
+        //open db connection
+        var connection = mysql.createConnection(config.database)
+        connection.connect();
 
-    var context = new Object();
-    context.connection = connection;
-    context.res = res;
+        var context = new Object();
+        context.connection = connection;
+        context.res = res;
 
-    var query = 'SELECT * FROM `pages` WHERE `ID` = ' + mysql.escape(uri.query.id)
-    console.log('handlePage: ' + query)
+        var query = 'SELECT * FROM `pages` WHERE `ID` = ' + mysql.escape(uri.query.id)
+        console.log('handlePage: ' + query)
 
-    context.connection.query(query, function(err, rows, fields) {
-    if (err) throw err;
+        context.connection.query(query, function(err, rows, fields) {
+            if (err) throw err;
 
-    if(rows.length >= 1){
-    context.htmlLocation = rows[0].location
-    makehtml(JSON.parse(rows[0].json_tags), rows[0].html, context)
+            if (rows.length >= 1) {
+                context.htmlLocation = rows[0].location
+                context.id = rows[0].ID
+                makehtml(JSON.parse(rows[0].json_tags), rows[0].html, context)
+            } else {
+                //close db
+                context.connection.end();
+                res.end('404 not found')
+
+            }
+        });
+
+
+
+    } else {
+        //on error or blank query print all movies
+        //html = html + '<h2>All Movies</h2>' + arrayToTable(movies)
     }
-    else{
-    //close db
-    context.connection.end();
-    res.end('404 not found')
-
-    }
-});
-
-
-
-} else {
-    //on error or blank query print all movies
-    //html = html + '<h2>All Movies</h2>' + arrayToTable(movies)
-}
 }
 
-function handleGrade(body, res){
+function handleGrade(body, res) {
     var post = qs.parse(body);
     var url = post['url']
     var text = post['text']
@@ -131,182 +130,195 @@ function handleGrade(body, res){
     context.url = url;
 
     //Determine submitted type
-    if(url)
-    {
+    if (url) {
         handleUrl(context)
-    }
-    else if(text)
-    {
-        handleText(text, context)
+    } else if (text) {
+        context.data = text;
+        handleText(context)
     }
 };
 
 
-function handleText(text, context)
-{
+function handleText(context) {
     context.htmlLocation = 'Pasted HTML'
-    context.data = text;
     pageProcessorInstance.processText(updateDB, context)
 };
 
-function handleUrl(context){
-//Determine if url is in database
-var escapedurl = mysql.escape(context.url)
-context.htmlLocation = escapedurl;
-console.log('logging context.htmlLocation' + context.htmlLocation)
+function handleUrl(context) {
+    //Determine if url is in database
+    var escapedurl = mysql.escape(context.url)
+    context.htmlLocation = escapedurl;
+    console.log('logging context.htmlLocation' + context.htmlLocation)
 
-var query = 'SELECT * FROM `pages` WHERE `location` = "' + context.htmlLocation + '"'
-console.log('handleUrl: ' + query)
+    var query = 'SELECT * FROM `pages` WHERE `location` = "' + context.htmlLocation + '"'
+    console.log('handleUrl: ' + query)
 
-context.connection.query(query, function(err, rows, fields) {
-  if (err) throw err;
+    context.connection.query(query, function(err, rows, fields) {
+        if (err) throw err;
 
-  if(rows.length >= 1){
-      makehtml(JSON.parse(rows[0].json_tags), rows[0].html, context)
-  }
-  else{
-      performWebLookup(context);
-  }
-});
+        if (rows.length >= 1) {
+            context.id = rows[0].ID
+            makehtml(JSON.parse(rows[0].json_tags), rows[0].html, context)
+        } else {
+            performWebLookup(context);
+        }
+    });
 
 
-//Download the page and parse it
-function performWebLookup(context){
+    //Download the page and parse it
+    function performWebLookup(context) {
 
-if (validUrl.isUri(url)){
-    http.get(url, function(response) {
+        if (validUrl.isUri(context.url)) {
+            http.get(context.url, function(response) {
 
-    pageProcessorInstance.process(response, updateDB, context)
-    })
-    console.log('made request')
-    } else {
-        console.log('Not a URI');
-        makehtml('', '', context)
+                pageProcessorInstance.process(response, updateDB, context)
+            })
+            console.log('made request')
+        } else {
+            console.log('Not a URI');
+            makehtml('', '', context)
+        }
     }
-}
 
-}//handleUrl
+} //handleUrl
 
 
 //Inserts new rows and updates existing with new information
-function updateDB(obj, context)
-{
+function updateDB(obj, context) {
     var safe_obj_str = JSON.stringify(obj)
-    var page = {location: context.htmlLocation, html: context.data, json_tags: safe_obj_str};
-    var pageUpdate = {html: context.data, json_tags: safe_obj_str};
+    var page = {
+        location: context.htmlLocation,
+        html: context.data,
+        json_tags: safe_obj_str
+    };
+    var pageUpdate = {
+        html: context.data,
+        json_tags: safe_obj_str
+    };
 
     var addAndUpdateQuery = 'INSERT INTO pages SET ? ON DUPLICATE KEY UPDATE ?'
 
     console.log('updateDB: ' + addAndUpdateQuery)
-    context.connection.query(addAndUpdateQuery, [page, pageUpdate], function(err, rows, fields) {
+    context.connection.query(addAndUpdateQuery, [page, pageUpdate], function(err, result) {
         if (err) throw err;
+
+        console.log(result)
+        context.id = result.insertId
+
+        //output the html
+        makehtml(obj, context.data, context)
     });
 
-    //output the html
-    makehtml(obj,context.data, context)
+
 }
 
 
-function makehtml(obj, data, context){
-//close db connection
-context.connection.end();
+function makehtml(obj, data, context) {
+    //close db connection
+    context.connection.end();
 
-var html = printHTMLStart()
-html += '<h2>' + context.htmlLocation + '</h2>'
+    var html = printHTMLStart()
+    html += '<h2>' + context.htmlLocation + '</h2>'
 
-//Build table
-html += '<table><tr><th>Tag</th><th>Count</th></tr>'
-for(var counter in obj )
-{
-    //console.log(obj[counter].name)
-    html += '<tr><td>'+ obj[counter].name + ' </td>'
-    html += '<td>' + obj[counter].count + '<td></tr>'
+    //permalink
+    html += '<a href="'
+    html += 'page?id=' + context.id
+    html += '">Permalink' + '</a>'
+
+    //Build table
+    html += '<table><tr><th>Tag</th><th>Count</th></tr>'
+    for (var counter in obj) {
+        //console.log(obj[counter].name)
+        html += '<tr><td>' + obj[counter].name + ' </td>'
+        html += '<td>' + obj[counter].count + '<td></tr>'
+    }
+    html += '</table>'
+
+    //Display source code
+    html += '<div id="srccode"><textarea>'
+    html += data
+    html += '</textarea></div>'
+
+
+    html += printHTMLEnd()
+    var contentType = 'text/html'
+    context.res.writeHead(200, {
+        'Content-type': contentType
+    })
+    context.res.end(html, 'utf-8')
+} //makehtml
+
+
+function printHTMLStart() {
+    var html = ''
+    html = html + '<html>'
+
+    html = html + '<head>'
+
+    html = html + ' <title>CS4241 Final Project - Gavin Hayes and Nick Chaput</title> <meta charset="utf-8"> <link rel="stylesheet" type="text/css" href="style.css"/>'
+    html = html + '<link href="https://fonts.googleapis.com/css?family=Lato" rel="stylesheet">'
+
+    html = html + '</head>'
+
+    html = html + '<body>'
+    html = html + '<div class="backimg" id="popback">'
+    html = html + '</div>'
+    html = html + '<div class = "content">'
+    html = html + '<h1>HTML Grader</h1>'
+
+    html += '<h2>Enter a URL</h2>'
+    html += '<form action="grade" method="post">'
+    html = html + '<input type="text" name="url" id="insertbox" autocomplete="off"/></td><td>'
+    html += '<h2>or paste your html here</h2>'
+    html += '<textarea name="text"></textarea>'
+    html += '<br>'
+    html = html + '<button type="submit">Process</button>'
+    html = html + '</form>'
+
+
+
+
+    html = html + '<div id="results">'
+    return html
 }
-html += '</table>'
 
-//Display source code
-html += '<div id="srccode"><textarea>'
-html += data
-html += '</textarea></div>'
+function printHTMLEnd() {
+    var html = '</div></div>'
 
+    html = html + '<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>'
+    html = html + '<script src="js/scripts.js"></script>'
 
-html += printHTMLEnd()
-var contentType = 'text/html'
-context.res.writeHead(200, {'Content-type': contentType})
-context.res.end(html, 'utf-8')
-}//makehtml
+    html = html + '</body>'
+    html = html + '</html>'
 
-
-function printHTMLStart()
-{
-var html = ''
-html = html + '<html>'
-
-html = html + '<head>'
-
-html = html + ' <title>CS4241 Final Project - Gavin Hayes and Nick Chaput</title> <meta charset="utf-8"> <link rel="stylesheet" type="text/css" href="style.css"/>'
-html = html + '<link href="https://fonts.googleapis.com/css?family=Lato" rel="stylesheet">'
-
-html = html + '</head>'
-
-html = html + '<body>'
-html = html + '<div class="backimg" id="popback">'
-html = html + '</div>'
-html = html + '<div class = "content">'
-html = html + '<h1>HTML Grader</h1>'
-
-html += '<h2>Enter a URL</h2>'
-html += '<form action="grade" method="post">'
-html = html + '<input type="text" name="url" id="insertbox" autocomplete="off"/></td><td>'
-html += '<h2>or paste your html here</h2>'
-html += '<textarea name="text"></textarea>'
-html += '<br>'
-html = html + '<button type="submit">Process</button>'
-html = html + '</form>'
-
-
-
-
-html = html + '<div id="results">'
-return html
-}
-
-function printHTMLEnd()
-{
-var html = '</div></div>'
-
-html = html + '<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>'
-html = html + '<script src="js/scripts.js"></script>'
-
-html = html + '</body>'
-html = html + '</html>'
-
-return html
+    return html
 
 }
 
 function sendIndex(res) {
-//html += '<iframe src="https://docs.google.com/document/d/1cxTkJFr-B7OU0awR64GOLbRcYTjrzG91dbKz3zz62ik/pub?embedded=true"></iframe>'
+    //html += '<iframe src="https://docs.google.com/document/d/1cxTkJFr-B7OU0awR64GOLbRcYTjrzG91dbKz3zz62ik/pub?embedded=true"></iframe>'
 
-//open db connection
-var connection = mysql.createConnection(config.database)
-connection.connect();
+    //open db connection
+    var connection = mysql.createConnection(config.database)
+    connection.connect();
 
-var context = new Object();
-context.connection = connection;
-context.res = res;
-context.url = 'http://computoid.com';
+    var context = new Object();
+    context.connection = connection;
+    context.res = res;
+    context.url = 'http://computoid.com';
 
-handleUrl(context)
+    handleUrl(context)
 }
 
 function sendFile(res, filename, contentType) {
-contentType = contentType || 'text/html'
+    contentType = contentType || 'text/html'
 
-fs.readFile(filename, function(error, content) {
-    res.writeHead(200, {'Content-type': contentType})
-    res.end(content, 'utf-8')
-})
+    fs.readFile(filename, function(error, content) {
+        res.writeHead(200, {
+            'Content-type': contentType
+        })
+        res.end(content, 'utf-8')
+    })
 
 };
 
