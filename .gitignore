@@ -1,2 +1,7 @@
 #.gitignore
 config.js
+npm-debug.log
+.idea
+.idea/*
+node_modules
+node_modules/*
