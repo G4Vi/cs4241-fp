@@ -54,6 +54,9 @@ var server = http.createServer(function(req, res) {
             case '/index.html': //incase a webbrowser requests the site by this
                 handleIndex(res)
                 break
+            case '/framefail.html': //backup for iframe
+                sendFile(res, 'framefail.html', 'text/html')
+                break
             case '/style.css':
                 sendFile(res, 'style.css', 'text/css')
                 break
@@ -244,6 +247,11 @@ Page.prototype.toHTML = function() {
     html += '<div><textarea id="srccode" readonly>'
     html += self.data
     html += '</textarea></div>'
+
+    //Display a preview of the page
+    html += '<div class="pagepreview"><iframe id="preview" srcdoc=\''+ self.data.split("'").join("\'") + '\' src="framefail.html">'
+    html += 'Error loading html content'
+    html += '</iframe></div>'
 
     return html;
 }; //toHTML
