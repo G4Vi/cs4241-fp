@@ -86,6 +86,10 @@ iframe{
     fill: #222222;
 }
 
+.chart rect.interbar:hover {
+    fill: #3333BB;
+}
+
 .chart text {
     fill: #DDDDDD;
     font: 14px sans-serif;

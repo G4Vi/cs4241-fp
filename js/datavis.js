@@ -34,7 +34,7 @@ var DV; //global namespace for Data Visualization constants and functions
             ];
 
             categories.forEach(function(curCat){
-               data.push({category: curCat, tags: [], count: 0});
+               data.push({category: curCat, tags: [], count: 0, total: 0});
             });
 
             var els = document.getElementsByClassName("bardata");
@@ -45,27 +45,35 @@ var DV; //global namespace for Data Visualization constants and functions
                 if (DV.isInformation(pair[0])) {
                     data[0].tags.push({tag: pair[0], count: parseInt(pair[1], 10)});
                     data[0].count += 1;
+                    data[0].total += parseInt(pair[1], 10);
                 } else if (DV.isOrg(pair[0])) {
                     data[1].tags.push({tag: pair[0], count: parseInt(pair[1], 10)});
                     data[1].count += 1;
+                    data[1].total += parseInt(pair[1], 10);
                 } else if (DV.isLinked(pair[0])) {
                     data[2].tags.push({tag: pair[0], count: parseInt(pair[1], 10)});
                     data[2].count += 1;
+                    data[2].total += parseInt(pair[1], 10);
                 } else if (DV.isEmbed(pair[0])) {
                     data[3].tags.push({tag: pair[0], count: parseInt(pair[1], 10)});
                     data[3].count += 1;
+                    data[3].total += parseInt(pair[1], 10);
                 } else if (DV.isText(pair[0])) {
                     data[4].tags.push({tag: pair[0], count: parseInt(pair[1], 10)});
                     data[4].count += 1;
+                    data[4].total += parseInt(pair[1], 10);
                 } else if (DV.isMedia(pair[0])) {
                     data[5].tags.push({tag: pair[0], count: parseInt(pair[1], 10)});
                     data[5].count += 1;
+                    data[5].total += parseInt(pair[1], 10);
                 } else if (DV.isInteract(pair[0])) {
                     data[6].tags.push({tag: pair[0], count: parseInt(pair[1], 10)});
                     data[6].count += 1;
+                    data[6].total += parseInt(pair[1], 10);
                 } else {
                     data[7].tags.push({tag: pair[0], count: parseInt(pair[1], 10)});
                     data[7].count += 1;
+                    data[7].total += parseInt(pair[1], 10);
                 }
                     });
 
@@ -76,9 +84,13 @@ var DV; //global namespace for Data Visualization constants and functions
                });
             });
 
+            /*
             return data.sort(function (a, b) {
                 return b.count - a.count;
             });
+            */
+
+            return data;
         },
 
         isInformation : function(name) {
@@ -227,7 +239,7 @@ var DV; //global namespace for Data Visualization constants and functions
 
             data.forEach(function(catData){
 
-                document.getElementById("chart").innerHTML += '<h3>' + catData.category + ': ' + catData.count + '</h3>';
+                document.getElementById("chart").innerHTML += '<h3>' + catData.category + ': ' + catData.count + ' tags used. Total: ' + catData.total + '</h3>';
 
                 var svg = d3.select('.chart')
                     .append("div")
@@ -253,6 +265,7 @@ var DV; //global namespace for Data Visualization constants and functions
                     });
 
                 bar.append("rect")
+                    .classed("interbar", true)
                     .attr("width", function (d) {
                         return x(d.count);
                     })
