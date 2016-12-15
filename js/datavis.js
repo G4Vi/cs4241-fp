@@ -33,7 +33,7 @@ var DV; //global namespace for Data Visualization constants and functions
 
             //get data and clear the chart div
             var data = DV.getChartData();
-            document.getElementById("chart").innerHTML = '<h2>Tags Used:</h2>';
+            document.getElementById("chart").innerHTML = '<h3>Tags Used</h3>';
 
             //create the chart
 
