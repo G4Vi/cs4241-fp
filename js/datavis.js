@@ -4,6 +4,8 @@ var DV; //global namespace for Data Visualization constants and functions
 
     DV = {
 
+        displayMode : 0,
+
         getChartData: function () {
             var data = [];
 
@@ -235,15 +237,17 @@ var DV; //global namespace for Data Visualization constants and functions
 
             //get data and clear the chart div
             var data = DV.getChartDataInteractive();
-            document.getElementById("chart").innerHTML += '<h2>Tags Used by Category</h2>';
+            document.getElementById("chart").innerHTML += '<h2 class="incategory hidden">Tags Used by Category</h2>';
 
             data.forEach(function(catData){
 
-                document.getElementById("chart").innerHTML += '<h3>' + catData.category + ': ' + catData.count + ' tags used. Total: ' + catData.total + '</h3>';
+                document.getElementById("chart").innerHTML += '<h3 class="incategory hidden">' + catData.category + ': ' + catData.count + ' tags used. Total: ' + catData.total + '</h3>';
 
                 var svg = d3.select('.chart')
                     .append("div")
                     .classed("svg-container", true) //container class to make it responsive
+                    .classed("hidden", true)
+                    .classed("incategory", true)
                     .append('svg')        // create an <svg> element
                     //responsive SVG needs these 2 attributes and no width and height attr
                     .attr("preserveAspectRatio", "xMinYMin meet")
@@ -283,7 +287,7 @@ var DV; //global namespace for Data Visualization constants and functions
 
                 var cont = document.getElementsByClassName("svg-container");
                 [].forEach.call(cont, function (el, i) {
-                    if (i != 0) {
+                    if (i != 0 && i != 8) {
                         var newwidth = (100.00 * ((barHeight + 2.00) * data[i-1].tags.length) / (width * 2.00) + "%");
                         console.log(newwidth);
                         el.style.paddingBottom = newwidth;
@@ -292,31 +296,13 @@ var DV; //global namespace for Data Visualization constants and functions
             });
 
             //create the chart
-        },
 
-        createChart: function () {
-            var width = 600,
-                barHeight = 40;
-
-            /*var data = [
-             {tag: 'p', count: 4},
-             {tag: 'div', count: 8},
-             {tag: 'html', count: 15},
-             {tag: 'body', count: 16},
-             {tag: 'a', count: 23},
-             {tag: 'head', count: 42}
-             ];*/
-
-            //get data and clear the chart div
-            var data = DV.getChartData();
-
-            document.getElementById("chart").innerHTML += '<h3>Frequency of Tags Used:</h3>';
-
-            //create the chart
+            document.getElementById("chart").innerHTML += '<h3 class="category">Frequency of Categories of Tags</h3>';
 
             var svg = d3.select('.chart')
                 .append("div")
                 .classed("svg-container", true) //container class to make it responsive
+                .classed("category", true)
                 .append('svg')        // create an <svg> element
                 //responsive SVG needs these 2 attributes and no width and height attr
                 .attr("preserveAspectRatio", "xMinYMin meet")
@@ -338,6 +324,79 @@ var DV; //global namespace for Data Visualization constants and functions
                 });
 
             bar.append("rect")
+                .classed("interbar", true)
+                .attr("width", function (d) {
+                    return x(d.total);
+                })
+                .attr("height", barHeight - 1);
+
+            bar.append("text")
+                .attr("x", function (d) {
+                    return 5;
+                })
+                .attr("y", barHeight / 2)
+                .attr("dy", ".35em")
+                .text(function (d) {
+                    return d.category + ': ' + d.total;
+                });
+
+            var cont = document.getElementsByClassName("svg-container");
+            [].forEach.call(cont, function (el, i) {
+                if (i == 8) {
+                    var newwidth = (100.00 * ((barHeight + 2.00) * data.length) / (width * 2.00) + "%");
+                    console.log(newwidth);
+                    el.style.paddingBottom = newwidth;
+                }
+            });
+        },
+
+        createChart: function () {
+            var width = 600,
+                barHeight = 40;
+
+            /*var data = [
+             {tag: 'p', count: 4},
+             {tag: 'div', count: 8},
+             {tag: 'html', count: 15},
+             {tag: 'body', count: 16},
+             {tag: 'a', count: 23},
+             {tag: 'head', count: 42}
+             ];*/
+
+            //get data and clear the chart div
+            var data = DV.getChartData();
+
+            document.getElementById("chart").innerHTML += '<h3 class="individual hidden">Frequency of Tags Used:</h3>';
+
+            //create the chart
+
+            var svg = d3.select('.chart')
+                .append("div")
+                .classed("svg-container", true) //container class to make it responsive
+                .classed("hidden", true)
+                .classed("individual", true)
+                .append('svg')        // create an <svg> element
+                //responsive SVG needs these 2 attributes and no width and height attr
+                .attr("preserveAspectRatio", "xMinYMin meet")
+                .attr("viewBox", "0 0 " + (width * 2) + " " + ((barHeight + 2) * data.length) * 2)
+                //class to make it responsive
+                .classed("svg-content-responsive", true);
+
+            var x = d3.scaleLinear()
+                .range([0, width])
+                .domain([0, d3.max(data, function (d) {
+                    return d.count
+                })]);
+
+            var bar = svg.selectAll("g")
+                .data(data)
+                .enter().append("g")
+                .attr("transform", function (d, i) {
+                    return "translate(0," + i * barHeight + ")";
+                });
+
+            bar.append("rect")
+                .classed("interbar", true)
                 .attr("width", function (d) {
                     return x(d.count);
                 })
@@ -364,6 +423,25 @@ var DV; //global namespace for Data Visualization constants and functions
         loadCharts : function() {
             DV.createChart();
             DV.createInteractiveChart();
+            document.getElementById("chart").addEventListener("click", function(){
+                switch(DV.displayMode) {
+                    case 0:
+                        d3.selectAll(".category").classed("hidden", true);
+                        d3.selectAll(".incategory").classed("hidden", false);
+                        DV.displayMode = 1;
+                        break;
+                    case 1:
+                        d3.selectAll(".incategory").classed("hidden", true);
+                        d3.selectAll(".individual").classed("hidden", false);
+                        DV.displayMode = 2;
+                        break;
+                    case 2:
+                        d3.selectAll(".individual").classed("hidden", true);
+                        d3.selectAll(".category").classed("hidden", false);
+                        DV.displayMode = 0;
+                        break;
+                }
+            })
         }
     };//end of DV namespace
 

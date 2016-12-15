@@ -115,4 +115,8 @@ iframe{
     top: 10px;
     left: 0;
 }
+
+.hidden {
+    display: none;
+}
 /*End Styling for DataVis*/
