@@ -50,7 +50,10 @@ var server = http.createServer(function(req, res) {
                 break
             case '/page':
                 handleID(res, uri)
-                break;
+                break
+            case '/content':
+                handleContent(res, uri)
+                break
             case '/index.html': //incase a webbrowser requests the site by this
                 handleIndex(res)
                 break
@@ -103,6 +106,24 @@ function handleID(res, uri) {
     }
 }
 
+function handleContent(res, uri){
+    if (uri.query && (uri.query.id !== "")) {
+        console.log(uri.query)
+
+        //open db connection
+        var connection = mysql.createConnection(config.database)
+        connection.connect();
+
+        var id = mysql.escape(uri.query.id)
+
+        var aPage = new Page(undefined, undefined, undefined, connection, res, id)
+
+
+    } else {
+        sendWebpage('404 File Not Found', res, 404)
+    }
+}
+
 function handleGrade(body, res) {
     var post = qs.parse(body);
     var url = post['url']
@@ -119,7 +140,7 @@ function handleGrade(body, res) {
 };
 
 //Page class
-function Page(__url, __text, __id, __connection, __res) {
+function Page(__url, __text, __id, __connection, __res, __content) {
     var self = this //I've had enough of this
 
     self.url = __url
@@ -139,6 +160,8 @@ function Page(__url, __text, __id, __connection, __res) {
         self.processText()
     } else if (__id) {
         self.processRequest(__id)
+    } else if(__content){
+        self.processDataRequest(__content)
     }
 }
 
@@ -216,6 +239,31 @@ Page.prototype.processRequest = function(id) {
 
 };
 
+Page.prototype.processDataRequest = function(id) {
+    var self = this
+
+    var query = 'SELECT * FROM `pages` WHERE `ID` = ' + id
+    console.log('processRequest: ' + query)
+
+    self.connection.query(query, function(err, rows, fields) {
+        if (err) throw err;
+
+        if (rows.length >= 1) {
+            self.htmlLocation = rows[0].location
+            self.id = rows[0].ID
+            self.data = rows[0].html
+            self.tags = JSON.parse(rows[0].json_tags)
+            sendWebpage(self.data, self.res, 200, self.connection, true)
+                //makehtml(JSON.parse(rows[0].json_tags), rows[0].html, self)
+        } else {
+            //close db
+            sendWebpage('404 File Not Found', self.res, 404, self.connection)
+
+        }
+    });
+
+};
+
 Page.prototype.toHTML = function() {
     var self = this;
 
@@ -249,7 +297,7 @@ Page.prototype.toHTML = function() {
     html += '</textarea></div>'
 
     //Display a preview of the page
-    html += '<div class="pagepreview"><iframe id="preview" srcdoc=\''+ self.data.split("'").join("\'") + '\' src="framefail.html">'
+    html += '<div class="pagepreview"><iframe id="preview" src="content?id=' + self.id +  '">'
     html += 'Error loading html content'
     html += '</iframe></div>'
 
@@ -292,21 +340,25 @@ Page.prototype.update = function(obj, context) {
 
 }
 
-function sendWebpage(content_html, res, code, connection) {
+function sendWebpage(content_html, res, code, connection, dataOnly) {
     //close db
     if (connection) {
         console.log('sendWebpage has connection')
         connection.end()
     }
 
+    var html = ''
+    if(!dataOnly){
     //Top of page
-    var html = printHTMLStart()
-
+    html = printHTMLStart()
+    }
     //content
     html += content_html
 
+    if(!dataOnly){
     //Bottom of page
     html += printHTMLEnd()
+    }
 
     //WriteHeadder
     var contentType = 'text/html'
