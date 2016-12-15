@@ -75,13 +75,13 @@ iframe{
 
 /*Styling for DataVis*/
 .chart rect {
-    fill: steelblue;
+    fill: #222222;
 }
 
 .chart text {
-    fill: white;
-    font: 10px sans-serif;
-    text-anchor: end;
+    fill: #DDDDDD;
+    font: 14px sans-serif;
+    text-anchor: start;
 }
 
 .bardata {
@@ -91,8 +91,8 @@ iframe{
 .svg-container {
     display: inline-block;
     position: relative;
-    width: 80%;
-    padding-bottom: 100%; /* aspect ratio */
+    width: 100%;
+    padding-bottom: 60%; /* aspect ratio */
     vertical-align: top;
     overflow: hidden;
 }

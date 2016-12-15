@@ -33,7 +33,7 @@ var DV; //global namespace for Data Visualization constants and functions
 
             //get data and clear the chart div
             var data = DV.getChartData();
-            document.getElementById("chart").innerHTML = '';
+            document.getElementById("chart").innerHTML = '<h2>Tags Used:</h2>';
 
             //create the chart
 
@@ -43,7 +43,7 @@ var DV; //global namespace for Data Visualization constants and functions
                 .append('svg')        // create an <svg> element
                 //responsive SVG needs these 2 attributes and no width and height attr
                 .attr("preserveAspectRatio", "xMinYMin meet")
-                .attr("viewBox","0 0 " + width + " " + (barHeight+2)*data.length)
+                .attr("viewBox","0 0 " + (width*2) + " " + ((barHeight+2)*data.length)*2)
                 //class to make it responsive
                 .classed("svg-content-responsive", true);
 
@@ -66,7 +66,7 @@ var DV; //global namespace for Data Visualization constants and functions
 
             bar.append("text")
                 .attr("x", function (d) {
-                    return x(d.count) - 3;
+                    return 5;
                 })
                 .attr("y", barHeight / 2)
                 .attr("dy", ".35em")
