@@ -73,6 +73,13 @@ var DV; //global namespace for Data Visualization constants and functions
                 .text(function (d) {
                     return d.tag + ': ' + d.count;
                 });
+
+            var cont = document.getElementsByClassName("svg-container");
+            [].forEach.call(cont, function (el) {
+                var newwidth = (100.00 * ((barHeight+2.00)*data.length) / (width * 2.00) + "%");
+                console.log(newwidth);
+                el.style.paddingBottom = newwidth;
+            });
         }
     };//end of DV namespace
 
