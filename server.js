@@ -77,7 +77,7 @@ var server = http.createServer(function(req, res) {
                 break
 
             default:
-                sendWebpage('404 File Not Found', res, 404)
+                sendWebpage('404 File Not Found', res, 404, null, true)
         }
     }
 
@@ -102,7 +102,7 @@ function handleID(res, uri) {
 
 
     } else {
-        sendWebpage('404 File Not Found', res, 404)
+        sendWebpage('404 File Not Found', res, 404, true)
     }
 }
 
@@ -232,7 +232,7 @@ Page.prototype.processRequest = function(id) {
                 //makehtml(JSON.parse(rows[0].json_tags), rows[0].html, self)
         } else {
             //close db
-            sendWebpage('404 File Not Found', self.res, 404, self.connection)
+            sendWebpage('404 File Not Found', self.res, 404, self.connection, true)
 
         }
     });
@@ -257,7 +257,7 @@ Page.prototype.processDataRequest = function(id) {
                 //makehtml(JSON.parse(rows[0].json_tags), rows[0].html, self)
         } else {
             //close db
-            sendWebpage('404 File Not Found', self.res, 404, self.connection)
+            sendWebpage('404 File Not Found', self.res, 404, self.connection, true)
 
         }
     });
@@ -365,7 +365,7 @@ function sendWebpage(content_html, res, code, connection, dataOnly) {
     if (!code) {
         code = 200
     }
-    console.log('code is ' + code)
+    console.log('return code is ' + code)
     res.writeHead(code, {
         'Content-type': contentType
     })
