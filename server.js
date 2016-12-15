@@ -7,8 +7,7 @@ var http = require('http'),
 var config = require('./config')
 var mysql = require('mysql');
 var validUrl = require('valid-url');
-
-//var movies = fs.readFileSync(movieTXT).toString().split("\n");
+var https = require('https');
 
 var pageProcessor = require('./pageProcessor.js');
 var pageProcessorInstance = new pageProcessor();
@@ -199,10 +198,20 @@ Page.prototype.processUrl = function() {
     function performWebLookup() {
 
         if (validUrl.isUri(self.url)) {
+
+            //determine type
+            var protocol = self.url.substring(0,5)
+            if(protocol === 'https'){
+                 https.get(self.url, function(response) {
+                pageProcessorInstance.process(response, self.update, self)
+            })
+            }
+            else{
             http.get(self.url, function(response) {
 
                 pageProcessorInstance.process(response, self.update, self)
             })
+        }
             console.log('made request')
         } else {
             console.log('Not a URI');
@@ -229,7 +238,6 @@ Page.prototype.processRequest = function(id) {
             self.data = rows[0].html
             self.tags = JSON.parse(rows[0].json_tags)
             sendWebpage(self.toHTML(), self.res, 200, self.connection)
-                //makehtml(JSON.parse(rows[0].json_tags), rows[0].html, self)
         } else {
             //close db
             sendWebpage('404 File Not Found', self.res, 404, self.connection, true)
@@ -254,7 +262,6 @@ Page.prototype.processDataRequest = function(id) {
             self.data = rows[0].html
             self.tags = JSON.parse(rows[0].json_tags)
             sendWebpage(self.data, self.res, 200, self.connection, true)
-                //makehtml(JSON.parse(rows[0].json_tags), rows[0].html, self)
         } else {
             //close db
             sendWebpage('404 File Not Found', self.res, 404, self.connection, true)
@@ -268,7 +275,7 @@ Page.prototype.toHTML = function() {
     var self = this;
 
     var html = ''
-    html += '<h2>' + self.htmlLocation + '</h2>'
+    html += '<h2>Source: ' + self.htmlLocation + '</h2>'
 
     //permalink
     html += '<a href="'
@@ -283,8 +290,6 @@ Page.prototype.toHTML = function() {
     }
     html += '</table>'*/
 
-
-
     html += '<div class="chart" id="chart">'
     for (var counter in self.tags) {
         html += '<p class="bardata">' + self.tags[counter].name + ' ' + self.tags[counter].count + '</p>'
@@ -292,12 +297,14 @@ Page.prototype.toHTML = function() {
     html += '</div>'
 
     //Display source code
-    html += '<div><textarea id="srccode" readonly>'
+    html += '<div><h3>Source</h3>'
+    html += '<textarea id="srccode" readonly>'
     html += self.data
     html += '</textarea></div>'
 
     //Display a preview of the page
-    html += '<div class="pagepreview"><iframe id="preview" src="content?id=' + self.id +  '" frameborder="0" scrolling="no">'
+    html += '<div class="pagepreview"><h3>Preview</h3>'
+    html += '<iframe id="preview" src="content?id=' + self.id +  '" frameborder="0" scrolling="no">'
     html += 'Error loading html content'
     html += '</iframe></div>'
 
@@ -378,47 +385,42 @@ function sendWebpage(content_html, res, code, connection, dataOnly) {
 
 function printHTMLStart() {
     var html = ''
-    html = html + '<html>'
+    html += '<html>'
+    html += '<head>'
+    html += ' <title>CS4241 Final Project - Gavin Hayes and Nick Chaput</title> <meta charset="utf-8"> <link rel="stylesheet" type="text/css" href="style.css"/>'
+    html += '<link href="https://fonts.googleapis.com/css?family=Montserrat" rel="stylesheet">'
+    html += '</head>'
 
-    html = html + '<head>'
+    html += '<body>'
+    html += '<div class = "content">'
+    html += '<h1>HTML Stats</h1>'
 
-    html = html + ' <title>CS4241 Final Project - Gavin Hayes and Nick Chaput</title> <meta charset="utf-8"> <link rel="stylesheet" type="text/css" href="style.css"/>'
-    html = html + '<link href="https://fonts.googleapis.com/css?family=Lato" rel="stylesheet">'
-
-    html = html + '</head>'
-
-    html = html + '<body>'
-    html = html + '<div class="backimg" id="popback">'
-    html = html + '</div>'
-    html = html + '<div class = "content">'
-    html = html + '<h1>HTML Grader</h1>'
-
+    html += '<div id="inputSection">'
     html += '<h2>Enter a URL</h2>'
     html += '<form action="grade" method="post">'
-    html = html + '<input type="text" name="url" id="insertbox" autocomplete="off"/></td><td>'
+    html += '<input type="text" name="url" id="insertbox" autocomplete="off"/></td><td>'
     html += '<h2>or paste your html here</h2>'
     html += '<textarea name="text" id="inputcode"></textarea>'
     html += '<br>'
-    html = html + '<button type="submit">Process</button>'
-    html = html + '</form>'
+    html += '<button type="submit">Process</button>'
+    html += '</form>'
+    html += '</div>'
 
-
-
-
-    html = html + '<div id="results">'
+    html += '<div id="results">'
     return html
 };
 
 function printHTMLEnd() {
-    var html = '</div></div>'
+    var html = '</div>'
+    html +=    '<footer>A final project for CS4241 by Gavin Hayes and Nick Chaput <a href="https://github.com/g4vin/cs4241-fp">Github</a></footer>'
+    html +=    '</div>'
 
-    html = html + '<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>'
-    html = html + '<script src="js/scripts.js"></script>'
-    html = html + '<script type="text/javascript" src="js/d3.min.js"></script>'
-    html = html + '<script type="text/javascript" src="js/datavis.js"></script>'
-
-    html = html + '</body>'
-    html = html + '</html>'
+    html += '<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>'
+    html += '<script src="js/scripts.js"></script>'
+    html += '<script type="text/javascript" src="js/d3.min.js"></script>'
+    html += '<script type="text/javascript" src="js/datavis.js"></script>'
+    html += '</body>'
+    html += '</html>'
 
     return html
 
@@ -446,140 +448,3 @@ function sendFile(res, filename, contentType) {
     })
 
 };
-
-/*
-function arrayToTable(movieNames)
-{
-    var html = '<table>'
-    html = html + '<thead><tr><th>Movie</th><th></th></tr</thead>'
-    html = html + '<tbody>'
-
-    //Add movie form
-    html = html + '<tr><form action="insert" method="post">'
-    html = html + '<td>'
-    html = html + '<input type="text" name="movie" id="insertbox" value="Enter a movie to insert" autocomplete="off"/></td><td>'
-    html = html + '<button type="submit">Insert</button>'
-    html = html + '</td></form>'
-    html = html + '</tr>'
-
-    //Existing movies
-    html = html + movieNames.map(createListItem).join(' ')
-    html = html + '</tbody></table>'
-
-    return html
-}
-
-function createListItem(d)
-{
-
-    html = ''
-
-    html = html + '<tr><form action="delete" method="post"><td>'
-    html = html + d
-    html = html + '</td><td><button name="movie" value="'
-    html = html + d
-    html = html + '">Delete</button>'
-    html = html + '</td></form>'
-    html = html + '</tr>'
-
-
-    return html
-}
-
-//avoid regex crashing the app if a backslash is submitted
-function escapeRegExp(str) {
-return str.replace(/[\-\[\]\/\{\}\(\)\*\+\?\.\\\^\$\|]/g, "\\$&");
-}
-
-function removeMovieBlocking(movieName)
-{
-  //read the movies into data
-  var data = fs.readFileSync(movieTXT, 'utf8').toString()
-
-  //determine if string exists in file
-  var stringToSearch = escapeRegExp(movieName + '\n')
-  var term = new RegExp( stringToSearch, 'g' )
-  var exists = data.search(term) >= 0
-
-  //actually replacing it
-  if(exists){
-      var result = data.replace(term, '');
-      fs.writeFileSync(movieTXT, result, 'utf8')
-
-
-      //reload movies array
-      movies = fs.readFileSync(movieTXT, 'utf8').toString().split("\n");
-      console.log('array updated!')
-
-  }
-}
-
-function removeMovie(movieName, res)
-{
-  //read the movies into data
-  fs.readFile(movieTXT, 'utf8', function (err,data) {
-  if (err){
-      sendIndex(res)
-      return console.log(err);
-  }
-
-  //determine if string exists in file
-  var stringToSearch = escapeRegExp(movieName + '\n')
-  var term = new RegExp( stringToSearch, 'g' )
-  var exists = data.search(term) >= 0
-
-  //actually replacing it
-  if(exists){
-      var result = data.replace(term, '');
-      fs.writeFileSync(movieTXT, result, 'utf8')
-
-      //reload movies array
-      fs.readFile(movieTXT, (err, data) => {
-          if (err){
-              console.log(err)
-              sendIndex(res)
-              return;
-          }
-          movies = data.toString().split("\n");
-          console.log('array updated!')
-          sendIndex(res)
-
-      });
-  }
-  else
-  {
-      sendIndex(res)
-  }
-
-});
-
-}
-
-
-function insertMovie(movieName, res)
-{
-    fs.appendFile(movieTXT, movieName, encoding='utf8', function (err) {
-        if (err)
-        {
-            sendIndex(res)
-            return console.log(err);
-        }
-        else
-        {
-               fs.readFile(movieTXT, (err, data) => {
-          if (err){
-              console.log(err)
-              sendIndex(res)
-              return;
-          }
-          movies = data.toString().split("\n");
-          console.log('array updated!')
-          sendIndex(res)
-
-      });
-        }
-
-});
-}
-
-*/
