@@ -297,7 +297,7 @@ Page.prototype.toHTML = function() {
     html += '</textarea></div>'
 
     //Display a preview of the page
-    html += '<div class="pagepreview"><iframe id="preview" src="content?id=' + self.id +  '">'
+    html += '<div class="pagepreview"><iframe id="preview" src="content?id=' + self.id +  '" frameborder="0" scrolling="no" onload="resizeIframe(this);">'
     html += 'Error loading html content'
     html += '</iframe></div>'
 

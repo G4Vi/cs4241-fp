@@ -39,3 +39,8 @@ $('#searchbox').on('click focusin', function() {
     }
 });
 
+setTimeout(function(){
+    console.log('loaded');
+    document.getElementById("preview").style.height = document.getElementById("preview").contentWindow.document.body.scrollHeight + 'px';
+}, 1000);
+
