@@ -7,6 +7,7 @@ var http = require('http'),
 var config = require('./config')
 var mysql = require('mysql');
 var validUrl = require('valid-url');
+var https = require('https');
 
 //var movies = fs.readFileSync(movieTXT).toString().split("\n");
 
@@ -199,10 +200,20 @@ Page.prototype.processUrl = function() {
     function performWebLookup() {
 
         if (validUrl.isUri(self.url)) {
+
+            //determine type
+            var protocol = self.url.substring(0,5)
+            if(protocol === 'https'){
+                 https.get(self.url, function(response) {
+                pageProcessorInstance.process(response, self.update, self)
+            })
+            }
+            else{
             http.get(self.url, function(response) {
 
                 pageProcessorInstance.process(response, self.update, self)
             })
+        }
             console.log('made request')
         } else {
             console.log('Not a URI');
@@ -229,7 +240,6 @@ Page.prototype.processRequest = function(id) {
             self.data = rows[0].html
             self.tags = JSON.parse(rows[0].json_tags)
             sendWebpage(self.toHTML(), self.res, 200, self.connection)
-                //makehtml(JSON.parse(rows[0].json_tags), rows[0].html, self)
         } else {
             //close db
             sendWebpage('404 File Not Found', self.res, 404, self.connection, true)
@@ -254,7 +264,6 @@ Page.prototype.processDataRequest = function(id) {
             self.data = rows[0].html
             self.tags = JSON.parse(rows[0].json_tags)
             sendWebpage(self.data, self.res, 200, self.connection, true)
-                //makehtml(JSON.parse(rows[0].json_tags), rows[0].html, self)
         } else {
             //close db
             sendWebpage('404 File Not Found', self.res, 404, self.connection, true)
